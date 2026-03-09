@@ -116,6 +116,24 @@
   .mod2 .module-progress-fill { background: var(--gradient-brand); }
   .mod3 .module-progress-fill { background: var(--gradient-brand); }
   .mod4 .module-progress-fill { background: var(--gradient-brand); }
+  .mod5 .module-icon { background: #fce7f3; }
+  .mod5 .module-progress-fill { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); }
+  /* ===== FLIPCARD ===== */
+  .fc-container { perspective: 1000px; width: 100%; max-width: 360px; margin: 0 auto 20px; height: 200px; }
+  .fc-card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s ease; cursor: pointer; }
+  .fc-card.flipped { transform: rotateY(180deg); }
+  .fc-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; text-align: center; }
+  .fc-front { background: linear-gradient(135deg, var(--primary) 0%, #5b21b6 100%); color: #fff; }
+  .fc-back { background: #fff; border: 2px solid var(--primary); transform: rotateY(180deg); }
+  .fc-word { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+  .fc-hint { font-size: 0.85rem; opacity: 0.8; }
+  .fc-def { font-size: 1.0rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+  .fc-example { font-size: 0.82rem; color: var(--text-muted); font-style: italic; }
+  .fc-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .fc-counter { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+  .fc-mode-btns { display: flex; gap: 8px; margin-bottom: 20px; }
+  .fc-mode-btn { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 10px; background: #fff; font-size: 0.9rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
+  .fc-mode-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
   .module-badge {
     position: absolute; top: 14px; right: 14px;
     font-size: 1.2rem;
@@ -309,6 +327,9 @@
       <span class="xp-badge">🔥 Streak: <span id="streak">0</span></span>
     </div>
   </div>
+  <div class="home-intro-card" style="background:linear-gradient(135deg,#ede9fe,#fce7f3);border-radius:16px;padding:16px 20px;margin:0 0 16px;font-size:0.9rem;color:#3b0764;line-height:1.55;">
+    <strong>📌 Så här funkar det:</strong> När du har bra koll på all fakta är du redo för NP-koden. Gå igenom modulerna i ordning — de tränar dig steg för steg att skriva på A-nivå.
+  </div>
   <div class="modules-list">
     <div class="module-card mod1" onclick="openModule('mod1')">
       <div class="module-top">
@@ -318,7 +339,7 @@
           <div class="module-name">NP-koden</div>
         </div>
       </div>
-      <div class="module-desc">Förstå hur läraren rättar och vad A-nivå egentligen kräver.</div>
+      <div class="module-desc">Se en riktig NP-fråga och förstå exakt vad A, C och E kräver.</div>
       <div class="module-progress-bar"><div class="module-progress-fill" id="m1-bar" style="width:0%"></div></div>
       <div class="module-badge" id="m1-badge"></div>
     </div>
@@ -330,7 +351,7 @@
           <div class="module-name">Avkoda frågan</div>
         </div>
       </div>
-      <div class="module-desc">Hitta uppdragsorden och förstå exakt vad frågan kräver av dig.</div>
+      <div class="module-desc">Lär dig uppdragsorden och träna på att svara exakt på det frågan ber om.</div>
       <div class="module-progress-bar"><div class="module-progress-fill" id="m2-bar" style="width:0%"></div></div>
       <div class="module-badge" id="m2-badge"></div>
     </div>
@@ -358,6 +379,18 @@
       <div class="module-progress-bar"><div class="module-progress-fill" id="m4-bar" style="width:0%"></div></div>
       <div class="module-badge" id="m4-badge"></div>
     </div>
+    <div class="module-card mod5" onclick="openModule('mod5')">
+      <div class="module-top">
+        <div class="module-icon">🃏</div>
+        <div class="module-info">
+          <div class="module-num">Modul 5</div>
+          <div class="module-name">Flipkort</div>
+        </div>
+      </div>
+      <div class="module-desc">Lär dig uppdragsorden utantill — med flipkort i två lägen.</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="m5-bar" style="width:0%"></div></div>
+      <div class="module-badge" id="m5-badge"></div>
+    </div>
   </div>
 </div>
 
@@ -368,342 +401,72 @@
     <span class="topbar-title">🔑 NP-koden</span>
   </div>
   <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m1-progress" style="width:0%"></div></div>
-
   <div class="content">
-    <!-- SLIDE 1 -->
+
+    <!-- SLIDE 1: NP-frågan -->
     <div class="slide active" id="m1-s1">
-      <div class="slide-count" id="m1-slide-count">Del 1 av 8</div>
-      <div class="card">
-        <h2>🎯 Hur läraren rättar — och hur du kan utnyttja det</h2>
-        <p>Läraren rättar inte efter magkänsla. Det finns en exakt rättningsmall och läraren <strong>måste</strong> följa den.</p>
-        <div class="highlight-box">
-          Rättningsmallen är din bästa vän. Om du vet vad som krävs för A — och levererar exakt det — <strong>måste</strong> läraren ge dig A.
-        </div>
-        <p style="margin-top:12px">Läraren kontrollerar en sak i taget: Finns rätt antal argument? Är de förtydligade? Finns problematisering? Inget annat spelar roll.</p>
+      <div class="slide-count">Del 1 av 3</div>
+      <div class="card" style="border-left:4px solid var(--primary)">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--primary);letter-spacing:0.05em;margin-bottom:8px">📋 NATIONELLT PROV — FRÅGA 7</div>
+        <p style="font-size:1.05rem;font-weight:700;line-height:1.6;color:var(--text);margin:0">Resonera om <strong>två likheter</strong> och <strong>två skillnader</strong> vad gäller synen på gud/gudar mellan <strong>hinduism</strong> och en <strong>valfri religion</strong>. Förtydliga likheterna och skillnaderna med <strong>exempel</strong> och <strong>förklaringar</strong>.</p>
       </div>
-      <div class="card">
-        <h3>⚠️ Vad läraren INTE kan göra</h3>
-        <p>Läraren kan inte ge poäng för något du "troligtvis menade". Läraren kan bara bedöma det som faktiskt <strong>står</strong> i din text.</p>
-        <div class="highlight-box warning">
-          Skriv explicit. Om du menar att ett argument visar på konsekvensen X — skriv ut det. Förutsätt aldrig att läraren förstår vad du menar.
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="m1Next()">Nästa →</button>
-    </div>
-
-    <!-- SLIDE 2: UPPDRAGSORDEN MED DEFINITIONER -->
-    <div class="slide" id="m1-s2">
-      <div class="slide-count">Del 2 av 8</div>
-      <div class="card">
-        <h2>🔤 Uppdragsorden — vad betyder de?</h2>
-        <p>Varje fråga innehåller ett eller flera <strong>uppdragsord</strong>. De talar om exakt vad du ska göra. Att missa dem är det vanligaste misstaget på NP.</p>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
-          <div style="background:#ede9fe;border-radius:10px;padding:12px 14px;border-left:4px solid #7c3aed">
-            <div style="font-weight:800;color:#6d28d9;margin-bottom:3px">Resonera</div>
-            <div style="font-size:0.87rem;color:#374151">Tänk högt — koppla ihop fakta och dra slutsatser. Det räcker inte att rada upp fakta. Du ska visa hur de hänger ihop.</div>
-          </div>
-          <div style="background:#ede9fe;border-radius:10px;padding:12px 14px;border-left:4px solid #7c3aed">
-            <div style="font-weight:800;color:#6d28d9;margin-bottom:3px">Argumentera</div>
-            <div style="font-size:0.87rem;color:#374151">Ta ställning och stöd det med en <em>etisk modell</em> (pliktetik, konsekvensetik, sinnelagsetik). Du ska inte bara beskriva modellen — du ska använda den.</div>
-          </div>
-          <div style="background:#ede9fe;border-radius:10px;padding:12px 14px;border-left:4px solid #7c3aed">
-            <div style="font-weight:800;color:#6d28d9;margin-bottom:3px">Jämför / Likhet / Skillnad</div>
-            <div style="font-size:0.87rem;color:#374151">Hitta vad som är lika respektive olika. Frågan anger alltid <em>exakt hur många</em> likheter och skillnader som krävs — räkna dem noga.</div>
-          </div>
-          <div style="background:#ede9fe;border-radius:10px;padding:12px 14px;border-left:4px solid #7c3aed">
-            <div style="font-weight:800;color:#6d28d9;margin-bottom:3px">Förtydliga / Fördjupa</div>
-            <div style="font-size:0.87rem;color:#374151">Visa vad du menar med ett <em>konkret exempel</em> eller en <em>förklaring av varför/hur</em>. Utan detta räknas inte punkten på A-nivå. Det är det vanligaste felet.</div>
-          </div>
-          <div style="background:#ede9fe;border-radius:10px;padding:12px 14px;border-left:4px solid #7c3aed">
-            <div style="font-weight:800;color:#6d28d9;margin-bottom:3px">Motivera</div>
-            <div style="font-size:0.87rem;color:#374151">Ge ett tydligt skäl — t.ex. varför en källa är bra eller varför du gör ett visst val. Räcker inte att påstå det — du ska visa varför.</div>
-          </div>
-          <div style="background:#ede9fe;border-radius:10px;padding:12px 14px;border-left:4px solid #7c3aed">
-            <div style="font-weight:800;color:#6d28d9;margin-bottom:3px">Konsekvens</div>
-            <div style="font-size:0.87rem;color:#374151">Vad händer om man gör si eller så? Används ofta som ett sätt att förtydliga ett argument — visa vad som faktiskt skulle hända.</div>
-          </div>
-          <div style="background:#ede9fe;border-radius:10px;padding:12px 14px;border-left:4px solid #7c3aed">
-            <div style="font-weight:800;color:#6d28d9;margin-bottom:3px">Problematisera</div>
-            <div style="font-size:0.87rem;color:#374151">Visa att det finns en annan sida, ett undantag eller en nyans. Krävs <em>bara på A-nivå</em> i argumentera-frågor. Läs om frågan ber om det.</div>
-          </div>
-        </div>
-      </div>
-      <div class="nav-arrows">
-        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
-        <button class="btn btn-primary" onclick="m1Next()" style="margin:0">Nästa →</button>
-      </div>
-    </div>
-
-    <!-- SLIDE 3: TRÄNA — HITTA UPPDRAGSORDEN -->
-    <div class="slide" id="m1-s3">
-      <div class="slide-count">Del 3 av 8</div>
-      <div class="card">
-        <h2>🎯 Träna: Hitta uppdragsorden</h2>
-        <p style="font-size:0.9rem;color:var(--text-muted)">Läs frågorna nedan och välj rätt svar. Nästa-knappen låses upp när du svarat på alla tre.</p>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">📋 NP-fråga 1</div>
-        <div class="quiz-question-card">
-          <p>"<strong>Resonera</strong> om en <strong>likhet</strong> och en <strong>skillnad</strong> i synen på livet efter döden mellan <strong>islam</strong> och <strong>kristendomen</strong>. <strong>Förtydliga</strong> med ett exempel."</p>
-        </div>
-        <p style="font-weight:700;margin-bottom:12px;margin-top:14px">Vilka är uppdragsorden i frågan?</p>
-        <div class="options-list" id="m1q1-opts">
-          <button class="option-btn" onclick="m1q1answer(0)">Islam, kristendomen, livet efter döden</button>
-          <button class="option-btn" onclick="m1q1answer(1)">Resonera, likhet, skillnad, förtydliga</button>
-          <button class="option-btn" onclick="m1q1answer(2)">Resonera, exempel</button>
-          <button class="option-btn" onclick="m1q1answer(3)">Likhet, skillnad, exempel</button>
-        </div>
-        <div class="feedback-box" id="m1q1-fb"></div>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">📋 NP-fråga 2</div>
-        <div class="quiz-question-card">
-          <p>"<strong>Argumentera</strong> med hjälp av <strong>två etiska modeller</strong> kring om det är rätt att donera organ. <strong>Förtydliga</strong> varje argument med ett exempel."</p>
-        </div>
-        <p style="font-weight:700;margin-bottom:12px;margin-top:14px">Vad ber frågan dig göra — specifikt?</p>
-        <div class="options-list" id="m1q2-opts">
-          <button class="option-btn" onclick="m1q2answer(0)">Beskriva vad organdomation är</button>
-          <button class="option-btn" onclick="m1q2answer(1)">Argumentera med 2 etiska modeller + förtydliga varje med ex</button>
-          <button class="option-btn" onclick="m1q2answer(2)">Jämföra två etiska modeller med varandra</button>
-          <button class="option-btn" onclick="m1q2answer(3)">Ge ett argument för och ett mot organdomation</button>
-        </div>
-        <div class="feedback-box" id="m1q2-fb"></div>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">📋 NP-fråga 3</div>
-        <div class="quiz-question-card">
-          <p>"<strong>Motivera</strong> varför <strong>två</strong> av källorna passar bra och varför <strong>två</strong> passar <strong>mindre bra</strong>. <strong>Förtydliga</strong> varje motivering med <strong>ett</strong> exempel."</p>
-        </div>
-        <p style="font-weight:700;margin-bottom:12px;margin-top:14px">Vad är INTE del av uppdraget?</p>
-        <div class="options-list" id="m1q3-opts">
-          <button class="option-btn" onclick="m1q3answer(0)">Motivera varför 2 källor är bra</button>
-          <button class="option-btn" onclick="m1q3answer(1)">Motivera varför 2 källor är dåliga</button>
-          <button class="option-btn" onclick="m1q3answer(2)">Jämföra de bra källorna med varandra</button>
-          <button class="option-btn" onclick="m1q3answer(3)">Förtydliga varje motivering med ett exempel</button>
-        </div>
-        <div class="feedback-box" id="m1q3-fb"></div>
-      </div>
-
-      <div class="nav-arrows">
-        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
-        <button class="btn btn-primary" id="m1s3-next" onclick="m1Next()" style="margin:0;opacity:0.4;pointer-events:none">Nästa →</button>
-      </div>
-    </div>
-
-    <!-- SLIDE 4: TRÄNA — SVARA PÅ RÄTT SAK -->
-    <div class="slide" id="m1-s4">
-      <div class="slide-count">Del 4 av 8</div>
-      <div class="card">
-        <h2>🔍 Träna: Svara på rätt sak</h2>
-        <p style="font-size:0.9rem;color:var(--text-muted)">Läs frågan och elevsvaret. Identifiera vad som saknas eller är fel. Alla tre måste besvaras.</p>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">Uppgift 1</div>
-        <div class="quiz-question-card">
-          <p><strong>Frågan lyder:</strong> "Resonera om en likhet mellan buddhism och kristendom i synen på det goda livet. Förtydliga likheten med ett exempel."</p>
-        </div>
-        <div style="background:#f8faff;border:2px solid #e9e3ff;border-radius:10px;padding:14px;margin:10px 0">
-          <div style="font-size:0.78rem;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Elevens svar</div>
-          <p style="font-size:0.9rem;line-height:1.6">"Buddhismen lär att man ska följa den åttaledade vägen. Kristendomen lär att man ska följa Guds bud. Båda religionerna har regler för hur man ska leva."</p>
-        </div>
-        <p style="font-weight:700;margin-bottom:12px">Vad saknas i elevsvaret?</p>
-        <div class="options-list" id="m1q4-opts">
-          <button class="option-btn" onclick="m1q4answer(0)">Svaret är komplett — likheten finns med</button>
-          <button class="option-btn" onclick="m1q4answer(1)">Eleven nämner en likhet men förtydligar den inte med ett exempel</button>
-          <button class="option-btn" onclick="m1q4answer(2)">Eleven nämner fel religioner</button>
-          <button class="option-btn" onclick="m1q4answer(3)">Svaret handlar inte om likheter alls</button>
-        </div>
-        <div class="feedback-box" id="m1q4-fb"></div>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">Uppgift 2</div>
-        <div class="quiz-question-card">
-          <p><strong>Frågan lyder:</strong> "Motivera varför källan passar bra att använda i ett arbete om ramadan. Förtydliga med ett exempel."</p>
-        </div>
-        <div style="background:#f8faff;border:2px solid #e9e3ff;border-radius:10px;padding:14px;margin:10px 0">
-          <div style="font-size:0.78rem;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Elevens svar</div>
-          <p style="font-size:0.9rem;line-height:1.6">"Källan passar bra eftersom den är skriven av en imam. Det är en trovärdig källa."</p>
-        </div>
-        <p style="font-weight:700;margin-bottom:12px">Vad saknas för A-nivå?</p>
-        <div class="options-list" id="m1q5-opts">
-          <button class="option-btn" onclick="m1q5answer(0)">En förklaring av vad ramadan är</button>
-          <button class="option-btn" onclick="m1q5answer(1)">En andra källa att jämföra med</button>
-          <button class="option-btn" onclick="m1q5answer(2)">Ett konkret exempel på varför imamens expertis gör källan trovärdig</button>
-          <button class="option-btn" onclick="m1q5answer(3)">Ingenting — svaret uppfyller kravet fullt ut</button>
-        </div>
-        <div class="feedback-box" id="m1q5-fb"></div>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">Uppgift 3</div>
-        <div class="quiz-question-card">
-          <p><strong>Frågan lyder:</strong> "Jämför hur pliktetik och konsekvensetik ser på att ljuga. Nämn en likhet och en skillnad. Du behöver inte förtydliga."</p>
-        </div>
-        <div style="background:#f8faff;border:2px solid #e9e3ff;border-radius:10px;padding:14px;margin:10px 0">
-          <div style="font-size:0.78rem;font-weight:700;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Elevens svar</div>
-          <p style="font-size:0.9rem;line-height:1.6">"En likhet är att båda modellerna försöker svara på vad som är rätt. En skillnad är att pliktetiken ser till regler medan konsekvensetiken ser till konsekvenser. Pliktetiken grundades av Kant som menade att regler är absoluta och aldrig kan brytas — det är det som skiljer den från andra etiska teorier."</p>
-        </div>
-        <p style="font-weight:700;margin-bottom:12px">Vad är problemet med elevsvaret?</p>
-        <div class="options-list" id="m1q6-opts">
-          <button class="option-btn" onclick="m1q6answer(0)">Eleven har fel om pliktetiken</button>
-          <button class="option-btn" onclick="m1q6answer(1)">Svaret är för kort</button>
-          <button class="option-btn" onclick="m1q6answer(2)">Eleven skriver om Kant — det bad inte frågan om</button>
-          <button class="option-btn" onclick="m1q6answer(3)">Svaret saknar en likhet</button>
-        </div>
-        <div class="feedback-box" id="m1q6-fb"></div>
-      </div>
-
-      <div class="nav-arrows">
-        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
-        <button class="btn btn-primary" id="m1s4-next" onclick="m1Next()" style="margin:0;opacity:0.4;pointer-events:none">Nästa →</button>
-      </div>
-    </div>
-
-    <!-- SLIDE 5: TRÄNA — VILKET AV DESSA ÄR...? -->
-    <div class="slide" id="m1-s5">
-      <div class="slide-count">Del 5 av 8</div>
-      <div class="card">
-        <h2>🔬 Träna: Vilket av dessa är...?</h2>
-        <p style="font-size:0.9rem;color:var(--text-muted)">Fyra typer av innehåll — lär dig känna igen dem i text. Svara på alla fyra.</p>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">Typ A</div>
-        <p style="font-weight:700;margin-bottom:12px">Vilken av dessa meningar är ett <strong style="color:var(--primary)">EXEMPEL</strong>?</p>
-        <div class="options-list" id="m1q7-opts">
-          <button class="option-btn" onclick="m1q7answer(0)">A) "Konsekvensetik fokuserar på vilka konsekvenser en handling leder till."</button>
-          <button class="option-btn" onclick="m1q7answer(1)">B) "Kant hävdade att sanningsplikten alltid gäller."</button>
-          <button class="option-btn" onclick="m1q7answer(2)">C) "En konsekvensetiker kan t.ex. hävda att det är rätt att ljuga om lögnen räddar ett liv och skadar ingen."</button>
-          <button class="option-btn" onclick="m1q7answer(3)">D) "Pliktetik och konsekvensetik delar uppfattningen att moralen ska vara universell."</button>
-        </div>
-        <div class="feedback-box" id="m1q7-fb"></div>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">Typ B</div>
-        <p style="font-weight:700;margin-bottom:12px">Vilken mening visar en <strong style="color:var(--primary)">LIKHET</strong> mellan två religioner?</p>
-        <div class="options-list" id="m1q8-opts">
-          <button class="option-btn" onclick="m1q8answer(0)">A) "Hinduismen tror på reinkarnation medan kristendomen tror på uppståndelse."</button>
-          <button class="option-btn" onclick="m1q8answer(1)">B) "I islam ber man fem gånger om dagen."</button>
-          <button class="option-btn" onclick="m1q8answer(2)">C) "Precis som kristendomen betonar även buddhismen vikten av medkänsla mot alla levande varelser."</button>
-          <button class="option-btn" onclick="m1q8answer(3)">D) "Muslimer fastar under ramadan för att minnas de fattiga."</button>
-        </div>
-        <div class="feedback-box" id="m1q8-fb"></div>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">Typ C</div>
-        <p style="font-weight:700;margin-bottom:12px">Vilken mening är en <strong style="color:var(--primary)">KONSEKVENS</strong> av ett val?</p>
-        <div class="options-list" id="m1q9-opts">
-          <button class="option-btn" onclick="m1q9answer(0)">A) "Kant hävdade att man alltid ska hålla sina löften."</button>
-          <button class="option-btn" onclick="m1q9answer(1)">B) "Konsekvensetiken grundades av Jeremy Bentham."</button>
-          <button class="option-btn" onclick="m1q9answer(2)">C) "Om alla normaliserar att ljuga riskerar tilliten i samhället att gradvis urholkas."</button>
-          <button class="option-btn" onclick="m1q9answer(3)">D) "Dilemmat handlar om huruvida ärlighet väger tyngre än vänskap."</button>
-        </div>
-        <div class="feedback-box" id="m1q9-fb"></div>
-      </div>
-
-      <div class="card">
-        <div class="quiz-label">Typ D</div>
-        <p style="font-weight:700;margin-bottom:12px">Vilken mening <strong style="color:var(--primary)">FÖRTYDLIGAR</strong> ett argument — med ett konkret exempel?</p>
-        <div class="options-list" id="m1q10-opts">
-          <button class="option-btn" onclick="m1q10answer(0)">A) "Källan passar bra att använda."</button>
-          <button class="option-btn" onclick="m1q10answer(1)">B) "Det är en trovärdig källa."</button>
-          <button class="option-btn" onclick="m1q10answer(2)">C) "Källan passar bra eftersom imamen har tjänstgjort i 20 år och granskat arabiska primärkällor — det gör informationen faktabaserad snarare än tolkningsbaserad."</button>
-          <button class="option-btn" onclick="m1q10answer(3)">D) "Man bör alltid granska sina källor kritiskt."</button>
-        </div>
-        <div class="feedback-box" id="m1q10-fb"></div>
-      </div>
-
-      <div class="nav-arrows">
-        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
-        <button class="btn btn-primary" id="m1s5-next" onclick="m1Next()" style="margin:0;opacity:0.4;pointer-events:none">Nästa →</button>
-      </div>
-    </div>
-
-    <!-- SLIDE 6: VAD KRÄVS FÖR E, C, A? -->
-    <div class="slide" id="m1-s6">
-      <div class="slide-count">Del 6 av 8</div>
-      <div class="card">
-        <h2>📊 Vad krävs för E, C och A?</h2>
-        <p>De tre frågetyperna du möter mest på NP har tydliga krav per betygsnivå. Här är de i korthet:</p>
-        <h3>Typ 1: Likheter och skillnader</h3>
-        <table class="criteria-table">
-          <tr><th>Nivå</th><th>Krav</th></tr>
-          <tr><td class="grade-e">E</td><td>Minst 2 likheter ELLER 2 skillnader (inget förtydligande krävs)</td></tr>
-          <tr><td class="grade-c">C</td><td>2 likheter + 1 skillnad (eller vice versa), varav 2 förtydligade med ex/förklaring</td></tr>
-          <tr><td class="grade-a">A</td><td>2 likheter + 2 skillnader, <em>var och en</em> förtydligad med ex/förklaring</td></tr>
-        </table>
-        <h3>Typ 2: Argumentera med etiska modeller</h3>
-        <table class="criteria-table">
-          <tr><th>Nivå</th><th>Krav</th></tr>
-          <tr><td class="grade-e">E</td><td>1 korrekt etisk modell + 1 argument + 1 förtydligande</td></tr>
-          <tr><td class="grade-c">C</td><td>2 modeller + 2 argument, varav 1 förtydligat med 2 ex/förklaringar</td></tr>
-          <tr><td class="grade-a">A</td><td>2 modeller + 2 argument, varav 2 förtydligade med 2 ex/förklaringar + <strong>problematisering</strong></td></tr>
-        </table>
-        <h3>Typ 3: Källkritik</h3>
-        <table class="criteria-table">
-          <tr><th>Nivå</th><th>Krav</th></tr>
-          <tr><td class="grade-e">E</td><td>1 motivering för bra källa + 1 för dålig, var och en med 1 ex/förklaring</td></tr>
-          <tr><td class="grade-c">C</td><td>2 för bra + 2 för dåliga, var och en med 1 ex/förklaring</td></tr>
-          <tr><td class="grade-a">A</td><td>2 för bra + 2 för dåliga, <em>varav 2</em> förtydligade med minst 2 ex/förklaringar</td></tr>
-        </table>
-      </div>
-      <div class="nav-arrows">
-        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
-        <button class="btn btn-primary" onclick="m1Next()" style="margin:0">Nästa →</button>
-      </div>
-    </div>
-
-    <!-- SLIDE 7: DIN STRATEGI -->
-    <div class="slide" id="m1-s7">
-      <div class="slide-count">Del 7 av 8</div>
-      <div class="card">
-        <h2>✅ Din strategi för A — steg för steg</h2>
-        <ul class="steps-list">
-          <li><div class="step-num">1</div><div><strong>Läs frågan noga.</strong> Hitta alla uppdragsord. Räkna hur många delar som krävs (t.ex. "två likheter och två skillnader").</div></li>
-          <li><div class="step-num">2</div><div><strong>Gör en miniplan.</strong> Skriv ner dina punkter på ett kladdpapper. Bocka av dem när du skriver. Börja inte skriva förrän du har din plan.</div></li>
-          <li><div class="step-num">3</div><div><strong>Förtydliga varje punkt.</strong> Efter varje argument/likhet/skillnad — skriv ett exempel ELLER en förklaring av varför/hur. Annars räknas den inte på A-nivå.</div></li>
-          <li><div class="step-num">4</div><div><strong>Problematisera</strong> när frågan kräver det. Visa att du ser en annan sida, ett undantag eller en nyans.</div></li>
-          <li><div class="step-num">5</div><div><strong>Kolla av</strong> innan du lämnar in. Har jag svarat på ALLT frågan ber om? Är varje punkt förtydligad?</div></li>
+      <div class="card" style="background:#fef9c3;border:none">
+        <p style="font-size:0.88rem;font-weight:700;color:#78350f;margin-bottom:8px">🔍 Vad frågan faktiskt ber om:</p>
+        <ul style="margin:0;padding-left:18px;font-size:0.88rem;color:#78350f;line-height:1.8">
+          <li><strong>Resonera</strong> — inte bara lista, utan förklara med tanke</li>
+          <li><strong>2 likheter + 2 skillnader</strong> — fyra separata punkter</li>
+          <li><strong>Förtydliga varje punkt</strong> med ett exempel eller förklaring</li>
+          <li><strong>Valfri religion</strong> — välj en du kan bra</li>
         </ul>
       </div>
       <div class="nav-arrows">
+        <button class="btn btn-primary" onclick="m1Next()" style="margin:0;flex:1">Nästa: Betygskraven →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Betygskraven -->
+    <div class="slide" id="m1-s2">
+      <div class="slide-count">Del 2 av 3</div>
+      <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:16px">Vad krävs för E, C och A?</h2>
+      <div class="card" style="border-left:4px solid #ef4444;padding:14px 16px;margin-bottom:10px">
+        <div style="font-size:0.75rem;font-weight:800;color:#ef4444;letter-spacing:0.06em;margin-bottom:6px">E-NIVÅ</div>
+        <p style="font-size:0.9rem;margin:0;line-height:1.5">Du nämner <strong>minst 2 likheter ELLER skillnader</strong> (eller 1+1). Inga förtydliganden krävs.</p>
+      </div>
+      <div class="card" style="border-left:4px solid #f59e0b;padding:14px 16px;margin-bottom:10px">
+        <div style="font-size:0.75rem;font-weight:800;color:#d97706;letter-spacing:0.06em;margin-bottom:6px">C-NIVÅ</div>
+        <p style="font-size:0.9rem;margin:0;line-height:1.5">Samma som E <strong>plus</strong> att <em>varje</em> nämnd punkt förtydligas med ett exempel eller en förklaring.</p>
+      </div>
+      <div class="card" style="border-left:4px solid #22c55e;padding:14px 16px;margin-bottom:10px">
+        <div style="font-size:0.75rem;font-weight:800;color:#16a34a;letter-spacing:0.06em;margin-bottom:6px">A-NIVÅ</div>
+        <p style="font-size:0.9rem;margin:0;line-height:1.5">Samtliga <strong>fyra</strong> punkter (2 likheter + 2 skillnader) förtydligas med ett konkret exempel eller förklaring <em>vardera</em>.</p>
+      </div>
+      <div class="nav-arrows">
         <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
         <button class="btn btn-primary" onclick="m1Next()" style="margin:0">Nästa →</button>
       </div>
     </div>
 
-    <!-- SLIDE 8: A-CHECKLISTAN -->
-    <div class="slide" id="m1-s8">
-      <div class="slide-count">Del 8 av 8</div>
-      <div class="card">
-        <h2>📋 A-checklistan</h2>
-        <p>Spara den här — den är din bästa vän på provet.</p>
-        <div style="margin-top:14px" class="checklist-items">
-          <div class="checklist-item"><input type="checkbox" id="cl1"><label for="cl1">Jag har hittat alla uppdragsord i frågan</label></div>
-          <div class="checklist-item"><input type="checkbox" id="cl2"><label for="cl2">Jag har gjort en miniplan med alla punkter frågan kräver</label></div>
-          <div class="checklist-item"><input type="checkbox" id="cl3"><label for="cl3">Jag svarar bara på det frågan ber om — inget mer, inget mindre</label></div>
-          <div class="checklist-item"><input type="checkbox" id="cl4"><label for="cl4">Varje argument/likhet/skillnad är förtydligat med ex eller förklaring</label></div>
-          <div class="checklist-item"><input type="checkbox" id="cl5"><label for="cl5">Om A-nivån kräver problematisering — jag har visat en annan sida</label></div>
-          <div class="checklist-item"><input type="checkbox" id="cl6"><label for="cl6">Jag har räknat att alla delar (t.ex. 2 likheter + 2 skillnader) finns med</label></div>
-        </div>
+    <!-- SLIDE 3: Sammanfattning -->
+    <div class="slide" id="m1-s3">
+      <div class="slide-count">Del 3 av 3</div>
+      <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:14px">🔑 NP-koden — sammanfattning</h2>
+      <div class="card" style="background:linear-gradient(135deg,#ede9fe,#fce7f3);border:none">
+        <p style="font-size:0.9rem;line-height:1.7;margin:0">
+          För att nå <strong>A</strong> räcker det <em>inte</em> att ha rätt fakta — du måste <em>visa</em> att du förstår den. Det gör du genom att förtydliga <strong>varje punkt</strong> med ett konkret exempel eller en tydlig förklaring.<br><br>
+          <strong>Formeln för A:</strong><br>
+          Punkt → Förtydligande med exempel/förklaring → Nästa punkt → osv.<br><br>
+          I Modul 2 tränar du på att identifiera uppdragsorden — orden som talar om exakt <em>vad du ska göra</em>.
+        </p>
       </div>
-      <div class="highlight-box success">
-        <strong>🎯 Kom ihåg:</strong> Du får bara poäng för det som faktiskt <em>står</em> i din text. Var explicit. Skriv ut det du menar.
-      </div>
-      <div class="nav-arrows">
-        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
+      <div class="nav-arrows" style="flex-direction:column;gap:10px">
+        <button class="btn btn-outline" onclick="m1Prev()" style="margin:0">← Tillbaka</button>
         <button class="btn btn-success" onclick="completeModule('mod1', 'm1')" style="margin:0;flex:1">🎉 Klar med NP-koden!</button>
       </div>
     </div>
+
   </div>
 </div>
+
 <!-- ==================== MODULE 2: AVKODA FRÅGAN ==================== -->
 <div id="mod2" class="screen">
   <div class="topbar">
@@ -711,8 +474,214 @@
     <span class="topbar-title">🔍 Avkoda frågan</span>
   </div>
   <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m2-progress" style="width:0%"></div></div>
-  <div class="content" id="m2-content">
-    <!-- Rendered by JS -->
+  <div class="content">
+
+    <!-- SLIDE 1: Uppdragsord -->
+    <div class="slide active" id="m2-s1">
+      <div class="slide-count">Del 1 av 6</div>
+      <h2 style="font-size:1.05rem;font-weight:800;margin-bottom:4px">Uppdragsorden — vad de innebär</h2>
+      <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:12px">Dessa ord talar om VAD du ska göra — inte vad du ska skriva om.</p>
+      <div class="card" style="padding:12px 14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.86rem;">
+          <div><strong style="color:var(--primary)">Resonera</strong><br>Tänk igenom och förklara med argument och motiveringar.</div>
+          <div><strong style="color:var(--primary)">Argumentera</strong><br>Ta ställning och ge skäl för din ståndpunkt.</div>
+          <div><strong style="color:var(--primary)">Jämför</strong><br>Peka på likheter OCH skillnader mellan två saker.</div>
+          <div><strong style="color:var(--primary)">Likhet</strong><br>Något som stämmer för båda — visa med "precis som…"</div>
+          <div><strong style="color:var(--primary)">Skillnad</strong><br>Något som skiljer dem åt — visa med "däremot…"</div>
+          <div><strong style="color:var(--primary)">Förtydliga</strong><br>Visa vad du menar med ett konkret exempel/förklaring.</div>
+          <div><strong style="color:var(--primary)">Motivera</strong><br>Ge skäl till varför något är sant, bra eller dåligt.</div>
+          <div><strong style="color:var(--primary)">Konsekvens</strong><br>Vad händer om man gör/inte gör något?</div>
+          <div style="grid-column:1/-1"><strong style="color:var(--primary)">Problematisera</strong> — Visa att frågan är komplex, att det finns fler perspektiv.</div>
+        </div>
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-primary" onclick="m2Next()" style="margin:0;flex:1">Träna! →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Träna — Hitta uppdragsorden -->
+    <div class="slide" id="m2-s2">
+      <div class="slide-count">Del 2 av 6</div>
+      <h2 style="font-size:1.0rem;font-weight:800;margin-bottom:4px">🎯 Träna: Hitta uppdragsorden</h2>
+      <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:12px">Vilka ord i frågan talar om <em>vad du ska göra</em>?</p>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.9rem;margin-bottom:8px">Fråga 1: "Resonera om två likheter och två skillnader vad gäller synen på livet efter döden mellan islam och kristendomen. Förtydliga varje punkt med ett exempel."</p>
+        <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:8px">Vilka är uppdragsorden?</p>
+        <div class="options-list" id="m2q1-opts">
+          <button class="option-btn" onclick="m2q1answer(0)">Islam, kristendomen, livet efter döden</button>
+          <button class="option-btn" onclick="m2q1answer(1)">Resonera, likhet, skillnad, förtydliga</button>
+          <button class="option-btn" onclick="m2q1answer(2)">Resonera, exempel</button>
+          <button class="option-btn" onclick="m2q1answer(3)">Likhet, skillnad, exempel</button>
+        </div>
+        <div class="feedback-box" id="m2q1-fb"></div>
+      </div>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.9rem;margin-bottom:8px">Fråga 2: "Argumentera med hjälp av två etiska modeller kring om Sofia gör rätt om hon behåller en hittad plånbok. Förtydliga varje argument med ett exempel."</p>
+        <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:8px">Vad kräver frågan?</p>
+        <div class="options-list" id="m2q2-opts">
+          <button class="option-btn" onclick="m2q2answer(0)">Beskriva vad organdomation är</button>
+          <button class="option-btn" onclick="m2q2answer(1)">Argumentera med 2 etiska modeller + förtydliga varje med ex</button>
+          <button class="option-btn" onclick="m2q2answer(2)">Jämföra två etiska modeller med varandra</button>
+          <button class="option-btn" onclick="m2q2answer(3)">Ge ett argument för och ett mot organdomation</button>
+        </div>
+        <div class="feedback-box" id="m2q2-fb"></div>
+      </div>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.9rem;margin-bottom:8px">Fråga 3: "Motivera varför två av källorna passar bra och varför två passar mindre bra. Förtydliga varje motivering med ett exempel."</p>
+        <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:8px">Vad ingår INTE i uppdraget?</p>
+        <div class="options-list" id="m2q3-opts">
+          <button class="option-btn" onclick="m2q3answer(0)">Motivera varför 2 källor är bra</button>
+          <button class="option-btn" onclick="m2q3answer(1)">Motivera varför 2 källor är dåliga</button>
+          <button class="option-btn" onclick="m2q3answer(2)">Jämföra de bra källorna med varandra</button>
+          <button class="option-btn" onclick="m2q3answer(3)">Förtydliga varje motivering med ett exempel</button>
+        </div>
+        <div class="feedback-box" id="m2q3-fb"></div>
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-outline" onclick="m2Prev()">← Tillbaka</button>
+        <button class="btn btn-primary" id="m2s2-next" onclick="m2Next()" style="margin:0;opacity:0.4;pointer-events:none">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Träna — Svara rakt på sak -->
+    <div class="slide" id="m2-s3">
+      <div class="slide-count">Del 3 av 6</div>
+      <h2 style="font-size:1.0rem;font-weight:800;margin-bottom:4px">🎯 Träna: Svara rakt på sak</h2>
+      <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:12px">Vad saknas i varje elevexempel?</p>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.9rem;margin-bottom:6px">Fråga: "Jämför hinduism och buddhism — ange en likhet och förtydliga med ett exempel."</p>
+        <p style="font-size:0.86rem;font-style:italic;color:var(--text-muted);margin-bottom:8px;padding:8px 10px;background:#f8fafc;border-radius:8px">Elevsvar: "En likhet är att båda religionerna har regler. Buddhismen har fem förbud och hinduismen har dharma."</p>
+        <div class="options-list" id="m2q4-opts">
+          <button class="option-btn" onclick="m2q4answer(0)">Svaret är komplett — likheten finns med</button>
+          <button class="option-btn" onclick="m2q4answer(1)">Eleven nämner en likhet men förtydligar den inte med ett exempel</button>
+          <button class="option-btn" onclick="m2q4answer(2)">Eleven nämner fel religioner</button>
+          <button class="option-btn" onclick="m2q4answer(3)">Svaret handlar inte om likheter alls</button>
+        </div>
+        <div class="feedback-box" id="m2q4-fb"></div>
+      </div>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.9rem;margin-bottom:6px">Fråga: "Motivera varför källa 1 (intervju med imam i SVT) passar bra."</p>
+        <p style="font-size:0.86rem;font-style:italic;color:var(--text-muted);margin-bottom:8px;padding:8px 10px;background:#f8fafc;border-radius:8px">Elevsvar: "Imamen är trovärdig eftersom han vet mycket om islam."</p>
+        <div class="options-list" id="m2q5-opts">
+          <button class="option-btn" onclick="m2q5answer(0)">En förklaring av vad ramadan är</button>
+          <button class="option-btn" onclick="m2q5answer(1)">En andra källa att jämföra med</button>
+          <button class="option-btn" onclick="m2q5answer(2)">Ett konkret exempel på varför imamens expertis gör källan trovärdig</button>
+          <button class="option-btn" onclick="m2q5answer(3)">Ingenting — svaret uppfyller kravet fullt ut</button>
+        </div>
+        <div class="feedback-box" id="m2q5-fb"></div>
+      </div>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.9rem;margin-bottom:6px">Fråga: "Jämför pliktetik och konsekvensetik — ange en likhet och en skillnad."</p>
+        <p style="font-size:0.86rem;font-style:italic;color:var(--text-muted);margin-bottom:8px;padding:8px 10px;background:#f8fafc;border-radius:8px">Elevsvar: "En skillnad är att pliktetiken fokuserar på regler medan konsekvensetiken fokuserar på resultat. Det är viktigt att följa regler. Kant hävdade att man alltid ska vara ärlig."</p>
+        <div class="options-list" id="m2q6-opts">
+          <button class="option-btn" onclick="m2q6answer(0)">Eleven har fel om pliktetiken</button>
+          <button class="option-btn" onclick="m2q6answer(1)">Svaret är för kort</button>
+          <button class="option-btn" onclick="m2q6answer(2)">Eleven skriver om Kant — det bad inte frågan om</button>
+          <button class="option-btn" onclick="m2q6answer(3)">Svaret saknar en likhet</button>
+        </div>
+        <div class="feedback-box" id="m2q6-fb"></div>
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-outline" onclick="m2Prev()">← Tillbaka</button>
+        <button class="btn btn-primary" id="m2s3-next" onclick="m2Next()" style="margin:0;opacity:0.4;pointer-events:none">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Träna — Vilket av dessa är...? -->
+    <div class="slide" id="m2-s4">
+      <div class="slide-count">Del 4 av 6</div>
+      <h2 style="font-size:1.0rem;font-weight:800;margin-bottom:4px">🎯 Träna: Vilket av dessa är...?</h2>
+      <p style="font-size:0.83rem;color:var(--text-muted);margin-bottom:12px">Identifiera typ av påstående.</p>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.88rem;margin-bottom:8px">Vilket är ett <strong>exempel</strong>?</p>
+        <div class="options-list" id="m2q7-opts">
+          <button class="option-btn" onclick="m2q7answer(0)">A) "Konsekvensetik fokuserar på vilka konsekvenser en handling leder till."</button>
+          <button class="option-btn" onclick="m2q7answer(1)">B) "Kant hävdade att sanningsplikten alltid gäller."</button>
+          <button class="option-btn" onclick="m2q7answer(2)">C) "En konsekvensetiker kan t.ex. hävda att det är rätt att ljuga om lögnen räddar ett liv och skadar ingen."</button>
+          <button class="option-btn" onclick="m2q7answer(3)">D) "Pliktetik och konsekvensetik delar uppfattningen att moralen ska vara universell."</button>
+        </div>
+        <div class="feedback-box" id="m2q7-fb"></div>
+      </div>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.88rem;margin-bottom:8px">Vilket är en <strong>likhet</strong>?</p>
+        <div class="options-list" id="m2q8-opts">
+          <button class="option-btn" onclick="m2q8answer(0)">A) "Hinduismen tror på reinkarnation medan kristendomen tror på uppståndelse."</button>
+          <button class="option-btn" onclick="m2q8answer(1)">B) "I islam ber man fem gånger om dagen."</button>
+          <button class="option-btn" onclick="m2q8answer(2)">C) "Precis som kristendomen betonar även buddhismen vikten av medkänsla mot alla levande varelser."</button>
+          <button class="option-btn" onclick="m2q8answer(3)">D) "Muslimer fastar under ramadan för att minnas de fattiga."</button>
+        </div>
+        <div class="feedback-box" id="m2q8-fb"></div>
+      </div>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.88rem;margin-bottom:8px">Vilket är en <strong>konsekvens</strong>?</p>
+        <div class="options-list" id="m2q9-opts">
+          <button class="option-btn" onclick="m2q9answer(0)">A) "Kant hävdade att man alltid ska hålla sina löften."</button>
+          <button class="option-btn" onclick="m2q9answer(1)">B) "Konsekvensetiken grundades av Jeremy Bentham."</button>
+          <button class="option-btn" onclick="m2q9answer(2)">C) "Om alla normaliserar att ljuga riskerar tilliten i samhället att gradvis urholkas."</button>
+          <button class="option-btn" onclick="m2q9answer(3)">D) "Dilemmat handlar om huruvida ärlighet väger tyngre än vänskap."</button>
+        </div>
+        <div class="feedback-box" id="m2q9-fb"></div>
+      </div>
+      <div class="card">
+        <p style="font-weight:700;font-size:0.88rem;margin-bottom:8px">Vilket är ett <strong>förtydligande med exempel</strong>?</p>
+        <div class="options-list" id="m2q10-opts">
+          <button class="option-btn" onclick="m2q10answer(0)">A) "Källan passar bra att använda."</button>
+          <button class="option-btn" onclick="m2q10answer(1)">B) "Det är en trovärdig källa."</button>
+          <button class="option-btn" onclick="m2q10answer(2)">C) "Källan passar bra eftersom imamen har tjänstgjort i 20 år och granskat arabiska primärkällor — det gör informationen faktabaserad snarare än tolkningsbaserad."</button>
+          <button class="option-btn" onclick="m2q10answer(3)">D) "Man bör alltid granska sina källor kritiskt."</button>
+        </div>
+        <div class="feedback-box" id="m2q10-fb"></div>
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-outline" onclick="m2Prev()">← Tillbaka</button>
+        <button class="btn btn-primary" id="m2s4-next" onclick="m2Next()" style="margin:0;opacity:0.4;pointer-events:none">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Din strategi för A -->
+    <div class="slide" id="m2-s5">
+      <div class="slide-count">Del 5 av 6</div>
+      <h2 style="font-size:1.05rem;font-weight:800;margin-bottom:12px">📐 Din strategi för A</h2>
+      <div class="card">
+        <p style="font-weight:700;margin-bottom:10px">Gör en miniplan <em>innan</em> du skriver:</p>
+        <ol style="margin:0;padding-left:20px;font-size:0.9rem;line-height:1.9">
+          <li>Läs frågan — stryk under <strong>uppdragsorden</strong></li>
+          <li>Räkna kraven: Hur många likheter? Skillnader? Ska varje punkt förtydligas?</li>
+          <li>Gör en <strong>lista</strong>: L1, L2, S1, S2 — fyll i dina punkter</li>
+          <li>Skriv <strong>en punkt i taget</strong> → förtydliga direkt</li>
+          <li>Svara bara på det frågan ber om — inga onödiga utsvävningar</li>
+        </ol>
+      </div>
+      <div class="card" style="background:#f0fdf4;border:none">
+        <p style="font-weight:700;color:#15803d;margin-bottom:6px">💡 Kom ihåg</p>
+        <p style="font-size:0.88rem;color:#166534;margin:0;line-height:1.6">Extra information som frågan <em>inte</em> bad om ger <strong>inga</strong> extra poäng — och tar upp värdefull tid.</p>
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-outline" onclick="m2Prev()">← Tillbaka</button>
+        <button class="btn btn-primary" onclick="m2Next()" style="margin:0">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: A-checklistan -->
+    <div class="slide" id="m2-s6">
+      <div class="slide-count">Del 6 av 6</div>
+      <h2 style="font-size:1.05rem;font-weight:800;margin-bottom:12px">✅ A-checklistan</h2>
+      <div class="card">
+        <p style="font-size:0.86rem;color:var(--text-muted);margin-bottom:12px">Bocka av varje punkt <em>innan</em> du lämnar in:</p>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:0.88rem">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer"><input type="checkbox" style="margin-top:2px;accent-color:var(--primary)"><span>Jag har hittat och förstått <strong>alla uppdragsord</strong></span></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer"><input type="checkbox" style="margin-top:2px;accent-color:var(--primary)"><span>Jag har skrivit <strong>exakt det antal punkter</strong> frågan kräver</span></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer"><input type="checkbox" style="margin-top:2px;accent-color:var(--primary)"><span><strong>Varje punkt</strong> har ett förtydligande med exempel eller förklaring</span></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer"><input type="checkbox" style="margin-top:2px;accent-color:var(--primary)"><span>Jag svarar bara på det frågan ber om — <strong>inga onödiga tillägg</strong></span></label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer"><input type="checkbox" style="margin-top:2px;accent-color:var(--primary)"><span>Om frågan säger "valfri religion" — jag har valt den religion <strong>jag kan bäst</strong></span></label>
+        </div>
+      </div>
+      <div class="nav-arrows" style="flex-direction:column;gap:10px">
+        <button class="btn btn-outline" onclick="m2Prev()" style="margin:0">← Tillbaka</button>
+        <button class="btn btn-success" onclick="completeModule('mod2', 'm2')" style="margin:0;flex:1">🎉 Klar med Avkoda frågan!</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -740,95 +709,20 @@
   </div>
 </div>
 
+<!-- ==================== MODULE 5: FLIPKORT ==================== -->
+<div id="mod5" class="screen">
+  <div class="topbar">
+    <button class="btn-back" onclick="goHome()">←</button>
+    <span class="topbar-title">🃏 Flipkort</span>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m5-progress" style="width:0%"></div></div>
+  <div class="content" id="mod5-content">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
 <script>
 // ===== DATA =====
-
-const quizData = [
-  {
-    q: `Resonera om <strong>två likheter</strong> och <strong>två skillnader</strong> vad gäller synen på livet efter döden mellan <strong>islam</strong> och <strong>kristendomen</strong>. Förtydliga likheterna och skillnaderna med <strong>exempel och förklaringar</strong>.`,
-    question: "Vad är det korrekta uppdragsord och vad exakt kräver A-nivå?",
-    options: [
-      "Resonera — räcker med 2 likheter ELLER 2 skillnader utan förklaringar",
-      "Argumentera — 2 argument med etiska modeller",
-      "Resonera — 2 likheter + 2 skillnader, var och en förtydligad med ex/förklaring ✓",
-      "Förklara — lista fakta om de två religionerna"
-    ],
-    correct: 2,
-    feedback: `Rätt! Uppdragsord: <strong>Resonera</strong>. För A krävs exakt 2 likheter + 2 skillnader — och <em>var och en</em> av dem ska förtydligas med ett exempel eller en förklaring. Det räcker inte att bara nämna dem.`
-  },
-  {
-    q: `<strong>Argumentera</strong> med hjälp av <strong>två etiska modeller</strong> kring om Sofia gör rätt och/eller fel om hon behåller en plånbok hon hittade på gatan. Förtydliga varje argument med <strong>två</strong> exempel, förklaringar eller konsekvenser.`,
-    question: "Vad är uppdragsorden och vad krävs specifikt för A?",
-    options: [
-      "Argumentera + 2 etiska modeller + 2 argument, varav 2 förtydligade med 2 ex/konsekvenser + problematisering ✓",
-      "Resonera + en etisk modell + ett argument per sida",
-      "Argumentera + 3 argument + 1 förklaring vardera",
-      "Motivera + 2 exempel + 1 etisk modell"
-    ],
-    correct: 0,
-    feedback: `Rätt! Uppdragsord: <strong>Argumentera</strong> + <strong>etiska modeller</strong>. A-nivå kräver: 2 korrekta etiska modeller, minst 2 relevanta argument, <em>varav minst 2</em> förtydligade med 2 ex/förklaringar/konsekvenser, PLUS en problematisering (visa att en modell kan ge argument för BÅDA sidor).`
-  },
-  {
-    q: `Emma ska skriva ett skolarbete om ramadan. <strong>Motivera</strong> varför <strong>två</strong> av fyra källor passar bra att använda. <strong>Motivera</strong> också varför <strong>två</strong> av källorna passar <strong>mindre bra</strong>. Förtydliga varje motivering med <strong>två</strong> exempel eller förklaringar.`,
-    question: "Hur många motiveringar med förtydliganden krävs för A-nivå?",
-    options: [
-      "2 motiveringar totalt, vardera med 1 förtydligande",
-      "4 motiveringar totalt (2 bra + 2 dåliga), varav 2 förtydligade med 2 ex och 2 med 1 ex ✓",
-      "4 motiveringar totalt med 1 förtydligande vardera",
-      "2 motiveringar för bra källor, ingen behöver förtydligas"
-    ],
-    correct: 1,
-    feedback: `Rätt! A-nivå i källkritik kräver: motivera 2 bra + 2 dåliga källor (totalt 4 motiveringar). <em>Minst 2</em> av dem ska förtydligas med 2 ex/förklaringar, och de övriga 2 med minst 1 ex/förklaring. Det är fler förtydliganden än C-nivå, som bara kräver 1 per motivering.`
-  },
-  {
-    q: `Läs följande fråga: "Adam hittar sin kompis dagbok och läser i den. <strong>Resonera</strong> om varför detta kan vara <strong>både rätt och fel</strong>. Använd <strong>två etiska modeller</strong> och <strong>förtydliga</strong> varje argument med exempel eller konsekvenser."`,
-    question: "Vad är det viktigaste tillägget på A-nivå som INTE krävs på C-nivå?",
-    options: [
-      "Fler etiska modeller — A kräver 3, C kräver 2",
-      "Problematisering — visa att samma etiska modell kan ge argument för BÅDA sidor ✓",
-      "Längre svar — minst 200 ord",
-      "Källhänvisning — ange varifrån du känner till de etiska modellerna"
-    ],
-    correct: 1,
-    feedback: `Rätt! Det avgörande för A kontra C i etikfrågor är <strong>problematiseringen</strong>: du ska visa att en och samma etiska modell kan ge argument <em>för att Adam gör rätt</em> OCH <em>för att Adam gör fel</em>. Det visar att du verkligen förstår hur modellerna fungerar.`
-  },
-  {
-    q: `"<strong>Resonera</strong> om hur en tonårings identitet kan påverkas på <strong>olika sätt</strong> av att tillhöra en religion. Välj en religion att utgå ifrån. Använd <strong>flera perspektiv</strong>, till exempel kön, bakgrund eller ålder."`,
-    question: "Vilket av dessa svar håller A-nivå?",
-    options: [
-      "Islam ger regler som muslimer ska följa, till exempel att be fem gånger om dagen.",
-      "Islam kan forma identiteten på flera sätt. En muslimsk tjej kan exempelvis uppleva att hennes religion stärker hennes känsla av gemenskap och tillhörighet. Å andra sidan kan en muslimsk kille i en icke-muslimsk klass känna sig annorlunda och ibland utanför, vilket också formas av religionen. ✓",
-      "Religionen påverkar identiteten hos alla ungdomar oavsett religion, vilket gör att ingen känner sig utanför.",
-      "Kristendom påverkar identiteten genom att ge ungdomar moral och värderingar."
-    ],
-    correct: 1,
-    feedback: `Rätt! Alternativ B är A-nivå för att det: (1) ger konkreta exempel med förklaring, (2) använder FLERA PERSPEKTIV (tjej vs kille, känsla av gemenskap vs utanförskap), och (3) problematiserar (religion kan vara positivt OCH negativt för identiteten). Alternativ A och D ger bara fakta utan förtydligande perspektiv.`
-  },
-  {
-    q: `"<strong>Argumentera</strong> för att ett påstående <strong>både kan vara korrekt och felaktigt</strong>. Skriv <strong>två argument</strong> som förtydligas med <strong>två</strong> förklaringar, konsekvenser eller exempel vardera."`,
-    question: "Vad händer om du bara förtydligar ett av argumenten med 2 förklaringar, och det andra bara med 1?",
-    options: [
-      "Du får A — ett förtydligande per argument räcker",
-      "Du får C — A kräver att minst 2 argument förtydligas med 2 ex/förklaringar ✓",
-      "Du får E — man måste ha 2 förtydliganden per argument för att ens nå E",
-      "Läraren avgör fritt vilket betyg det är värt"
-    ],
-    correct: 1,
-    feedback: `Rätt! Det är ett klassiskt C/A-misstag. C kräver att <em>minst ett</em> argument förtydligas med 2 ex/förklaringar. A kräver att <em>minst två</em> argument förtydligas med 2 ex/förklaringar. Missen ger C, inte A. Lösning: förtydliga ALLA argument med 2 ex/förklaringar så är du säker.`
-  },
-  {
-    q: `Uppgift: "<strong>Jämför</strong> hur hinduism och buddhism ser på karma och återfödelse. Ange <strong>två likheter</strong> och <strong>två skillnader</strong> och <strong>förtydliga</strong> varje punkt med ett <strong>exempel</strong> eller en <strong>förklaring</strong>."<br><br>Elev A skriver: "Likhet 1: Båda tror på karma. Skillnad 1: Hinduism har moksha, buddhism har nirvana."`,
-    question: "Vilket betyg ger svaret och varför?",
-    options: [
-      "A — innehåller en likhet och en skillnad",
-      "C — har en likhet och en skillnad, men bådas förtydligade",
-      "E — en likhet och en skillnad nämns, men ingen av dem är förtydligad ✓",
-      "Underkänt — svarar inte på frågan alls"
-    ],
-    correct: 2,
-    feedback: `Rätt! Svaret ger belägg för <strong>E</strong>. Eleven nämner en likhet ("båda tror på karma") och en skillnad (moksha/nirvana) — det räcker för E. Men: (1) inga förtydliganden/förklaringar, (2) bara 1 likhet och 1 skillnad istället för 2+2. För A krävs 2 likheter + 2 skillnader, <em>var och en</em> förtydligad.`
-  }
-];
 
 const judgeData = [
   {
@@ -907,6 +801,30 @@ const judgeData = [
       }
     ],
     correctIndex: 0
+  },
+  {
+    question: `<strong>Fråga:</strong> Jämför hur hinduism och buddhism ser på karma och återfödelse. Ange <strong>två likheter</strong> och <strong>två skillnader</strong> och förtydliga varje punkt med ett exempel eller en förklaring.`,
+    answers: [
+      {
+        label: "Svar 1",
+        text: `En likhet är att båda religionerna tror på karma — att ens handlingar i detta liv påverkar nästa. I hinduismen kallas principen karma och avgör vilken kast man föds in i nästa liv. I buddhismen fungerar karma på liknande sätt men leder inte till en ny kast utan till en ny existensform beroende på hur upplyst man är. En annan likhet är att båda religionerna tror på återfödelse (reinkarnation/samsara) — att man föds om gång på gång tills man uppnår befrielse. En skillnad är att hinduismen tror på en evig själ (atman) som återföds i nya kroppar, medan buddhismen förnekar en permanent själ (anatta) och i stället ser återfödelse som en kontinuitet av medvetande utan fast kärna. En annan skillnad är målet: i hinduismen är målet moksha — förening med Brahman — medan buddhismen strävar mot nirvana, ett tillstånd av total frihet från begär och lidande.`,
+        grade: "a",
+        explain: `<strong>A-nivå.</strong> Svaret innehåller exakt <strong>2 likheter + 2 skillnader</strong>. <em>Alla fyra</em> punkter förtydligas med konkreta exempel eller förklaringar (karma med kastväsende vs existensform; samsara förklaras; atman vs anatta förklaras; moksha vs nirvana definieras). Det är exakt vad A kräver.`
+      },
+      {
+        label: "Svar 2",
+        text: `Hinduism och buddhism har flera saker gemensamt. Båda tror på karma och återfödelse. En likhet är att karma styr vad som händer efter döden — du får ett bättre eller sämre nästa liv beroende på hur du levde. En annan likhet är att man föds om tills man uppnår ett slags befrielse. En skillnad är att hinduismen tror på en evig själ (atman) som föds om, medan buddhismen inte tror på en fast själ. En annan skillnad är att befrielsen heter olika — moksha i hinduismen och nirvana i buddhismen.`,
+        grade: "c",
+        explain: `<strong>C-nivå.</strong> Strukturen är rätt: 2 likheter + 2 skillnader. Men bara <em>2 av 4</em> punkter förtydligas tillräckligt (karma förklaras kortfattat; atman/anatta nämns). Likhet 2 (återfödelse) och skillnad 2 (moksha/nirvana) saknar konkret förklaring — de nämns men visas inte. Därför räcker det till C men inte A.`
+      },
+      {
+        label: "Svar 3",
+        text: `Likhet 1: Båda tror på karma. Skillnad 1: Hinduism har moksha, buddhism har nirvana.`,
+        grade: "e",
+        explain: `<strong>E-nivå.</strong> En likhet och en skillnad nämns — det räcker för E. Men ingen av punkterna förtydligas med ett exempel eller förklaring. "Båda tror på karma" är ett påstående, inte ett förtydligande. Svaret har rätt riktning men stannar vid E-nivå.`
+      }
+    ],
+    correctIndex: 0
   }
 ];
 
@@ -957,17 +875,18 @@ let state = {
   xp: 0,
   streak: 0,
   mod1Done: false,
-  mod2Score: 0,
-  mod2Total: quizData.length,
-  mod2Current: 0,
-  mod2Answered: [],
+  mod2Done: false,
   mod3Score: 0,
   mod3Total: judgeData.length,
   mod3Current: 0,
   mod3Answered: [],
+  mod3Done: false,
   mod4Current: 0,
   mod4Total: writeData.length,
-  mod4Answered: []
+  mod4Answered: [],
+  mod4Done: false,
+  mod5Done: false,
+  mod5Seen: 0
 };
 
 function loadState() {
@@ -991,9 +910,9 @@ function goHome() {
 }
 function openModule(id) {
   showScreen(id);
-  if (id === 'mod2') renderQuiz();
   if (id === 'mod3') renderJudge();
   if (id === 'mod4') renderWrite();
+  if (id === 'mod5') initFlashcards();
 }
 
 // ===== HOME BADGES =====
@@ -1001,13 +920,10 @@ function updateHomeBadges() {
   document.getElementById('total-xp').textContent = state.xp;
   document.getElementById('streak').textContent = state.streak;
 
-  const m1 = document.getElementById('m1-badge');
   const m1bar = document.getElementById('m1-bar');
-  if (state.mod1Done) { m1.textContent = '✅'; m1bar.style.width = '100%'; }
+  if (state.mod1Done) { document.getElementById('m1-badge').textContent = '✅'; m1bar.style.width = '100%'; }
 
-  const m2pct = Math.round((state.mod2Answered.length / state.mod2Total) * 100);
-  document.getElementById('m2-bar').style.width = m2pct + '%';
-  if (state.mod2Answered.length === state.mod2Total) document.getElementById('m2-badge').textContent = '✅';
+  if (state.mod2Done) { document.getElementById('m2-badge').textContent = '✅'; document.getElementById('m2-bar').style.width = '100%'; }
 
   const m3pct = Math.round((state.mod3Answered.length / state.mod3Total) * 100);
   document.getElementById('m3-bar').style.width = m3pct + '%';
@@ -1016,11 +932,15 @@ function updateHomeBadges() {
   const m4pct = Math.round((state.mod4Answered.length / state.mod4Total) * 100);
   document.getElementById('m4-bar').style.width = m4pct + '%';
   if (state.mod4Answered.length === state.mod4Total) document.getElementById('m4-badge').textContent = '✅';
+
+  const m5pct = state.mod5Seen > 0 ? Math.min(100, Math.round((state.mod5Seen / 9) * 100)) : 0;
+  document.getElementById('m5-bar').style.width = m5pct + '%';
+  if (state.mod5Done) document.getElementById('m5-badge').textContent = '✅';
 }
 
 // ===== MODULE 1 NAVIGATION =====
 let m1Current = 1;
-const m1Total = 8;
+const m1Total = 3;
 function m1Next() {
   if (m1Current < m1Total) {
     document.getElementById('m1-s' + m1Current).classList.remove('active');
@@ -1038,211 +958,209 @@ function m1Prev() {
   }
 }
 
-// ===== SLIDE 3 QUIZ — Hitta uppdragsorden =====
-var m1s3done = 0;
-function m1checkS3() { if(m1s3done>=3){var b=document.getElementById('m1s3-next');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}} }
-function m1q1answer(i){
-  var opts=document.querySelectorAll('#m1q1-opts .option-btn');
+// ===== MODULE 2 NAVIGATION =====
+let m2Current = 1;
+const m2Total = 6;
+function m2Next() {
+  if (m2Current < m2Total) {
+    document.getElementById('m2-s' + m2Current).classList.remove('active');
+    m2Current++;
+    document.getElementById('m2-s' + m2Current).classList.add('active');
+    document.getElementById('m2-progress').style.width = Math.round((m2Current / m2Total) * 100) + '%';
+  }
+}
+function m2Prev() {
+  if (m2Current > 1) {
+    document.getElementById('m2-s' + m2Current).classList.remove('active');
+    m2Current--;
+    document.getElementById('m2-s' + m2Current).classList.add('active');
+    document.getElementById('m2-progress').style.width = Math.round((m2Current / m2Total) * 100) + '%';
+  }
+}
+
+// ===== MOD2 SLIDE 2 — Hitta uppdragsorden =====
+var m2s2done = 0;
+function m2checkS2() { if(m2s2done>=3){var b=document.getElementById('m2s2-next');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}} }
+function m2q1answer(i){
+  var opts=document.querySelectorAll('#m2q1-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q1-fb');
+  var fb=document.getElementById('m2q1-fb');
   if(i===1){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt!</div>Uppdragsorden är de ord som talar om <strong>VAD du ska göra</strong>: Resonera (tankesätt), likhet/skillnad (vad du ska hitta), förtydliga (hur varje punkt ska visas). Islam och kristendomen är ämnet — inte uppdragsord.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[1].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>Uppdragsorden är: <strong>Resonera, likhet, skillnad, förtydliga</strong>. Ämnesorden (islam, kristendomen, livet efter döden) berättar bara VAD du ska skriva om — inte hur.';fb.className='feedback-box wrong show';}
-  m1s3done++;m1checkS3();
+  m2s2done++;m2checkS2();
 }
-function m1q2answer(i){
-  var opts=document.querySelectorAll('#m1q2-opts .option-btn');
+function m2q2answer(i){
+  var opts=document.querySelectorAll('#m2q2-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q2-fb');
+  var fb=document.getElementById('m2q2-fb');
   if(i===1){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt!</div>Frågan kräver: (1) argumentera, (2) med exakt <strong>2 etiska modeller</strong>, (3) förtydliga <strong>varje</strong> argument med ett exempel. Alla tre delar måste finnas med för A.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[1].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>Frågan ber dig <strong>argumentera med 2 etiska modeller</strong> och förtydliga varje argument. Det handlar inte om att beskriva eller jämföra modellerna — du ska använda dem för att ta ställning.';fb.className='feedback-box wrong show';}
-  m1s3done++;m1checkS3();
+  m2s2done++;m2checkS2();
 }
-function m1q3answer(i){
-  var opts=document.querySelectorAll('#m1q3-opts .option-btn');
+function m2q3answer(i){
+  var opts=document.querySelectorAll('#m2q3-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q3-fb');
+  var fb=document.getElementById('m2q3-fb');
   if(i===2){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt!</div>Frågan ber dig motivera de bra och de dåliga källorna <strong>separat</strong> — inte jämföra dem med varandra. Att jämföra vore ett annat uppdragsord (Jämför). Svara på exakt det frågan ber om.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[2].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>Det som <strong>inte</strong> ingår är att jämföra källorna med varandra. Frågan säger "motivera varför" — inte "jämför". Att skriva jämförelser ger inga extra poäng och slösar skrivtid.';fb.className='feedback-box wrong show';}
-  m1s3done++;m1checkS3();
+  m2s2done++;m2checkS2();
 }
 
-// ===== SLIDE 4 QUIZ — Svara på rätt sak =====
-var m1s4done = 0;
-function m1checkS4() { if(m1s4done>=3){var b=document.getElementById('m1s4-next');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}} }
-function m1q4answer(i){
-  var opts=document.querySelectorAll('#m1q4-opts .option-btn');
+// ===== MOD2 SLIDE 3 — Svara rakt på sak =====
+var m2s3done = 0;
+function m2checkS3() { if(m2s3done>=3){var b=document.getElementById('m2s3-next');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}} }
+function m2q4answer(i){
+  var opts=document.querySelectorAll('#m2q4-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q4-fb');
+  var fb=document.getElementById('m2q4-fb');
   if(i===1){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt!</div>"Båda har regler" är likheten — men frågan kräver ett <strong>förtydligande med exempel</strong>. T.ex.: "Precis som kristendomen har tio Guds bud, har buddhismen fem förbud (sila)." Utan det förtydligandet räknas inte punkten på A-nivå.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[1].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>Likheten finns med — men det <strong>saknas ett förtydligande med exempel</strong>. Frågan ber om det explicit. Att bara påstå likheten utan att visa den konkret räknas inte på A-nivå.';fb.className='feedback-box wrong show';}
-  m1s4done++;m1checkS4();
+  m2s3done++;m2checkS3();
 }
-function m1q5answer(i){
-  var opts=document.querySelectorAll('#m1q5-opts .option-btn');
+function m2q5answer(i){
+  var opts=document.querySelectorAll('#m2q5-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q5-fb');
+  var fb=document.getElementById('m2q5-fb');
   if(i===2){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt!</div>"Imamen är trovärdig" är motiveringen — men var är <strong>exemplet</strong>? T.ex.: "Imamen har 20 år av teologiska studier och tjänstgör i en moské — det gör honom till en primärkälla med djup kunskap om ramadan." Det gör argumentet konkret.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[2].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>Det som saknas är ett <strong>konkret exempel</strong> som förtydligar varför imamen är trovärdig. "Imamen är trovärdig" är bara ett påstående — frågan kräver att du visar VAD som gör källan trovärdig.';fb.className='feedback-box wrong show';}
-  m1s4done++;m1checkS4();
+  m2s3done++;m2checkS3();
 }
-function m1q6answer(i){
-  var opts=document.querySelectorAll('#m1q6-opts .option-btn');
+function m2q6answer(i){
+  var opts=document.querySelectorAll('#m2q6-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q6-fb');
+  var fb=document.getElementById('m2q6-fb');
   if(i===2){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt!</div>Eleven skriver om Kant — men frågan frågade <strong>inte</strong> om det. Det sista stycket ger inga poäng och slösar skrivtid. Svara på exakt vad frågan ber om — extra information som inte svarar på frågan räknas inte.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[2].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>Faktafel finns inte, svaret är inte för kort, och både likhet och skillnad finns. Problemet är att det sista stycket om Kant är <strong>onödig information</strong> som frågan aldrig bad om.';fb.className='feedback-box wrong show';}
-  m1s4done++;m1checkS4();
+  m2s3done++;m2checkS3();
 }
 
-// ===== SLIDE 5 QUIZ — Vilket av dessa är...? =====
-var m1s5done = 0;
-function m1checkS5() { if(m1s5done>=4){var b=document.getElementById('m1s5-next');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}} }
-function m1q7answer(i){
-  var opts=document.querySelectorAll('#m1q7-opts .option-btn');
+// ===== MOD2 SLIDE 4 — Vilket av dessa är...? =====
+var m2s4done = 0;
+function m2checkS4() { if(m2s4done>=4){var b=document.getElementById('m2s4-next');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}} }
+function m2q7answer(i){
+  var opts=document.querySelectorAll('#m2q7-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q7-fb');
+  var fb=document.getElementById('m2q7-fb');
   if(i===2){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt — C är ett exempel!</div>Exemplet börjar med "t.ex." och visar ett <em>konkret fall</em> av regeln. A är en definition, B är ett påstående/regel, D är en likhet.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[2].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>C är exemplet — det börjar med "t.ex." och visar ett konkret fall. Ett exempel illustrerar alltid det allmänna med något specifikt.';fb.className='feedback-box wrong show';}
-  m1s5done++;m1checkS5();
+  m2s4done++;m2checkS4();
 }
-function m1q8answer(i){
-  var opts=document.querySelectorAll('#m1q8-opts .option-btn');
+function m2q8answer(i){
+  var opts=document.querySelectorAll('#m2q8-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q8-fb');
+  var fb=document.getElementById('m2q8-fb');
   if(i===2){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt — C är en likhet!</div>"Precis som..." signalerar att två saker jämförs och att de <em>är lika</em> i något avseende. A är en skillnad, B beskriver bara en religion, D förklarar ett syfte.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[2].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>C är likheten — "precis som kristendomen... betonar även buddhismen..." visar att <em>båda</em> gör samma sak. En likhet måste alltid handla om <em>minst två</em> saker som jämförs.';fb.className='feedback-box wrong show';}
-  m1s5done++;m1checkS5();
+  m2s4done++;m2checkS4();
 }
-function m1q9answer(i){
-  var opts=document.querySelectorAll('#m1q9-opts .option-btn');
+function m2q9answer(i){
+  var opts=document.querySelectorAll('#m2q9-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q9-fb');
+  var fb=document.getElementById('m2q9-fb');
   if(i===2){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt — C är en konsekvens!</div>"Om X... riskerar Y att ske" — konsekvensen visar vad som <em>händer som ett resultat</em> av ett val eller en handling. A är en regel, B är historia, D är en problemformulering.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[2].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>C är konsekvensen — "Om alla normaliserar att ljuga, riskerar tilliten att urholkas." En konsekvens svarar på frågan: <em>vad händer om man gör så här?</em>';fb.className='feedback-box wrong show';}
-  m1s5done++;m1checkS5();
+  m2s4done++;m2checkS4();
 }
-function m1q10answer(i){
-  var opts=document.querySelectorAll('#m1q10-opts .option-btn');
+function m2q10answer(i){
+  var opts=document.querySelectorAll('#m2q10-opts .option-btn');
   opts.forEach(function(b){b.classList.add('disabled');b.onclick=null;});
-  var fb=document.getElementById('m1q10-fb');
+  var fb=document.getElementById('m2q10-fb');
   if(i===2){opts[i].classList.add('correct');fb.innerHTML='<div class="feedback-title">✅ Rätt — C förtydligar med exempel!</div>C ger ett konkret skäl (<em>varför</em> imamen är trovärdig) med specifika detaljer. A och B är bara påståenden. D är en generell regel — inte kopplad till den specifika källan.';fb.className='feedback-box correct show';}
   else{opts[i].classList.add('wrong');opts[2].classList.add('correct');fb.innerHTML='<div class="feedback-title">❌ Inte riktigt</div>C förtydligar — det ger konkreta detaljer som <em>visar</em> varför källan är trovärdig. "Trovärdig" eller "passar bra" räcker inte ensamt — du måste visa VAD som gör det trovärdigt.';fb.className='feedback-box wrong show';}
-  m1s5done++;m1checkS5();
+  m2s4done++;m2checkS4();
 }
 function completeModule(moduleId, prefix) {
   if (prefix === 'm1') { state.mod1Done = true; state.xp += 50; state.streak++; }
+  if (prefix === 'm2') { state.mod2Done = true; state.xp += 50; state.streak++; m2Current = 1; }
   saveState();
   updateHomeBadges();
   showCompletionToast(moduleId);
 }
 function showCompletionToast(moduleId) {
-  const names = { mod1: 'NP-koden', mod2: 'Avkoda frågan', mod3: 'Bedöm svaret', mod4: 'Skriv och jämför' };
+  const names = { mod1: 'NP-koden', mod2: 'Avkoda frågan', mod3: 'Bedöm svaret', mod4: 'Skriv och jämför', mod5: 'Flipkort' };
   alert('🎉 Bra jobbat! Du har klarat ' + (names[moduleId] || moduleId) + '!\n\n+50 XP tillagda!');
   goHome();
 }
 
-// ===== MODULE 2: QUIZ =====
-function renderQuiz() {
-  const idx = state.mod2Current;
-  if (idx >= quizData.length) {
-    renderQuizDone();
-    return;
-  }
-  const q = quizData[idx];
-  const progress = Math.round((idx / quizData.length) * 100);
-  document.getElementById('m2-progress').style.width = progress + '%';
-  const alreadyAnswered = state.mod2Answered.includes(idx);
+// ===== MODULE 5: FLIPKORT =====
+const flashcards = [
+  { word: 'Resonera', def: 'Tänk igenom och förklara med argument och motiveringar — visa att du förstår.', example: 'T.ex.: "Hinduismen och kristendomen skiljer sig på detta sätt…"' },
+  { word: 'Argumentera', def: 'Ta ställning och ge tydliga skäl för din ståndpunkt.', example: 'T.ex.: "Ur ett pliktetiskt perspektiv är handlingen fel eftersom…"' },
+  { word: 'Jämför', def: 'Peka på likheter OCH skillnader mellan minst två saker.', example: 'T.ex.: "En likhet är… En skillnad är…"' },
+  { word: 'Likhet', def: 'Något som stämmer för båda — visa det konkret.', example: 'T.ex.: "Precis som kristendomen betonar även buddhismen medkänsla."' },
+  { word: 'Skillnad', def: 'Något som skiljer dem åt — visa det konkret.', example: 'T.ex.: "Däremot tror hinduismen på en evig själ, vilket buddhismen inte gör."' },
+  { word: 'Förtydliga', def: 'Visa vad du menar med ett konkret exempel eller en förklaring.', example: 'T.ex.: "Karma innebär att ens handlingar i detta liv påverkar nästa — t.ex. leder goda gärningar till bättre återfödelse."' },
+  { word: 'Motivera', def: 'Ge skäl till varför något är sant, bra eller dåligt.', example: 'T.ex.: "Källan är trovärdig eftersom imamen är expert och intervjuades av SVT."' },
+  { word: 'Konsekvens', def: 'Vad händer som ett resultat av ett val eller en handling?', example: 'T.ex.: "Om alla normaliserar att ljuga riskerar tilliten i samhället att urholkas."' },
+  { word: 'Problematisera', def: 'Visa att frågan är komplex — att det finns fler perspektiv eller att svaret inte är självklart.', example: 'T.ex.: "Konsekvensetiken ger inget enkelt svar — det beror helt på vilka konsekvenser som faktiskt uppstår."' }
+];
 
-  let html = `
-    <div class="slide-count">Fråga ${idx + 1} av ${quizData.length}</div>
-    <div class="quiz-question-card">
-      <div class="quiz-label">📋 Uppgiftsbeskrivning</div>
-      <p>${q.q}</p>
+let fcMode = 'lara'; // 'lara' or 'testa'
+let fcIndex = 0;
+let fcFlipped = false;
+
+function initFlashcards() {
+  fcIndex = 0;
+  fcFlipped = false;
+  renderFlashcardUI();
+}
+
+function renderFlashcardUI() {
+  const el = document.getElementById('mod5-content');
+  el.innerHTML = `
+    <h2 style="font-size:1.1rem;font-weight:800;margin-bottom:12px">🃏 Flipkort — Uppdragsord</h2>
+    <div class="fc-mode-btns">
+      <button class="fc-mode-btn ${fcMode==='lara'?'active':''}" onclick="setFcMode('lara')">📖 Lär dig</button>
+      <button class="fc-mode-btn ${fcMode==='testa'?'active':''}" onclick="setFcMode('testa')">🧪 Testa dig</button>
     </div>
-    <div class="card">
-      <p style="font-weight:700;margin-bottom:14px">${q.question}</p>
-      <div class="options-list">`;
-
-  q.options.forEach((opt, i) => {
-    let cls = 'option-btn';
-    if (alreadyAnswered) {
-      cls += ' disabled';
-      if (i === q.correct) cls += ' correct';
-    }
-    html += `<button class="${cls}" onclick="answerQuiz(${idx}, ${i})">${opt}</button>`;
-  });
-
-  html += `</div>
-      <div class="feedback-box" id="quiz-feedback"></div>
-    </div>`;
-
-  if (alreadyAnswered) {
-    html += `<button class="btn btn-primary" onclick="nextQuiz()">Nästa fråga →</button>`;
-  }
-
-  document.getElementById('m2-content').innerHTML = html;
-
-  if (alreadyAnswered) {
-    const fb = document.getElementById('quiz-feedback');
-    fb.innerHTML = `<div class="feedback-title">✅ Du har svarat på den här frågan</div>${q.feedback}`;
-    fb.className = 'feedback-box correct show';
-  }
+    <div class="fc-nav">
+      <button class="btn btn-outline" style="padding:8px 14px;font-size:0.85rem" onclick="fcPrev()">← Föregående</button>
+      <span class="fc-counter">${fcIndex + 1} / ${flashcards.length}</span>
+      <button class="btn btn-outline" style="padding:8px 14px;font-size:0.85rem" onclick="fcNext()">Nästa →</button>
+    </div>
+    <div class="fc-container" onclick="flipCard()">
+      <div class="fc-card${fcFlipped?' flipped':''}" id="fc-card">
+        <div class="fc-face fc-front">
+          ${fcMode==='lara'
+            ? `<div class="fc-word">${flashcards[fcIndex].word}</div><div class="fc-hint">Tryck för definition →</div>`
+            : `<div class="fc-word" style="font-size:1.0rem;font-weight:600">${flashcards[fcIndex].def}</div><div class="fc-hint">Tryck för ordet →</div>`
+          }
+        </div>
+        <div class="fc-face fc-back">
+          ${fcMode==='lara'
+            ? `<div class="fc-def">${flashcards[fcIndex].def}</div><div class="fc-example">${flashcards[fcIndex].example}</div>`
+            : `<div class="fc-word">${flashcards[fcIndex].word}</div>`
+          }
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:0.82rem;color:var(--text-muted);margin-bottom:20px">Tryck på kortet för att vända det</p>
+    <button class="btn btn-success btn-full" onclick="completeModule('mod5','m5')" style="margin-top:8px">✅ Klar med Flipkort!</button>
+  `;
+  // update progress
+  if (state.mod5Seen < fcIndex + 1) { state.mod5Seen = fcIndex + 1; saveState(); updateHomeBadges(); }
 }
 
-function answerQuiz(qIdx, chosen) {
-  if (state.mod2Answered.includes(qIdx)) return;
-  const q = quizData[qIdx];
-  const buttons = document.querySelectorAll('.option-btn');
-  const isCorrect = chosen === q.correct;
-  buttons.forEach((btn, i) => {
-    btn.classList.add('disabled');
-    if (i === q.correct) btn.classList.add('correct');
-    else if (i === chosen && !isCorrect) btn.classList.add('wrong');
-  });
-  const fb = document.getElementById('quiz-feedback');
-  if (isCorrect) {
-    fb.innerHTML = `<div class="feedback-title">✅ Rätt!</div>${q.feedback}`;
-    fb.className = 'feedback-box correct show';
-    state.xp += 10;
-  } else {
-    fb.innerHTML = `<div class="feedback-title">❌ Inte riktigt…</div>${q.feedback}`;
-    fb.className = 'feedback-box wrong show';
-  }
-  state.mod2Answered.push(qIdx);
-  saveState();
-  const nextBtn = document.createElement('button');
-  nextBtn.className = 'btn btn-primary';
-  nextBtn.style.marginTop = '12px';
-  nextBtn.textContent = qIdx < quizData.length - 1 ? 'Nästa fråga →' : 'Se resultat →';
-  nextBtn.onclick = nextQuiz;
-  document.getElementById('m2-content').appendChild(nextBtn);
-  document.getElementById('m2-progress').style.width = Math.round(((qIdx + 1) / quizData.length) * 100) + '%';
+function setFcMode(mode) {
+  fcMode = mode;
+  fcFlipped = false;
+  renderFlashcardUI();
 }
 
-function nextQuiz() {
-  state.mod2Current = Math.min(state.mod2Current + 1, quizData.length);
-  saveState();
-  renderQuiz();
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  const card = document.getElementById('fc-card');
+  if (card) card.classList.toggle('flipped');
 }
 
-function renderQuizDone() {
-  const correct = state.mod2Answered.length;
-  document.getElementById('m2-progress').style.width = '100%';
-  const score = Math.round((correct / quizData.length) * 100);
-  let stars = score >= 85 ? '⭐⭐⭐' : score >= 60 ? '⭐⭐' : '⭐';
-  document.getElementById('m2-content').innerHTML = `
-    <div class="result-screen">
-      <div class="result-emoji">🎉</div>
-      <div class="result-title">Modul 2 klar!</div>
-      <div class="result-sub">Du avkodade alla ${quizData.length} frågor</div>
-      <div class="result-stars">${stars}</div>
-      <div class="xp-earned">+${state.xp} XP totalt</div>
-      <button class="btn btn-primary" onclick="state.mod2Current=0;state.mod2Answered=[];saveState();renderQuiz()">🔁 Gör om</button>
-      <button class="btn btn-outline btn-full" style="margin-top:10px" onclick="goHome()">🏠 Hem</button>
-    </div>`;
-  if (!state.mod2Done) { state.mod2Done = true; state.xp += 30; saveState(); }
-  updateHomeBadges();
+function fcNext() {
+  if (fcIndex < flashcards.length - 1) { fcIndex++; fcFlipped = false; renderFlashcardUI(); }
 }
+
+function fcPrev() {
+  if (fcIndex > 0) { fcIndex--; fcFlipped = false; renderFlashcardUI(); }
+}
+
 
 // ===== MODULE 3: BEDÖM SVARET =====
 function renderJudge() {
