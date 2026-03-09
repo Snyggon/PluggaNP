@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>plugganp.se — Religion åk 9</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --primary-light: #e0e7ff;
+    --success: #16a34a;
+    --success-light: #dcfce7;
+    --warning: #d97706;
+    --warning-light: #fef3c7;
+    --danger: #dc2626;
+    --danger-light: #fee2e2;
+    --neutral: #64748b;
+    --neutral-light: #f1f5f9;
+    --white: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8faff;
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* ---- SCREEN MANAGEMENT ---- */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ---- TOP BAR ---- */
+  .topbar {
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-logo { font-size: 1.2rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+  .topbar-title { font-weight: 600; font-size: 1rem; color: var(--text); flex: 1; }
+  .btn-back {
+    background: none; border: none; cursor: pointer;
+    color: var(--primary); font-size: 1.4rem; line-height: 1;
+    padding: 4px 8px; border-radius: 8px;
+  }
+  .btn-back:hover { background: var(--primary-light); }
+  .progress-bar-wrap { height: 8px; background: var(--border); border-radius: 4px; margin: 0 20px; margin-top: -2px; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #818cf8); border-radius: 4px; transition: width 0.5s ease; }
+
+  /* ---- HOME SCREEN ---- */
+  .home-header {
+    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+    color: white; padding: 40px 24px 32px;
+    text-align: center;
+  }
+  .home-header h1 { font-size: 2rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 6px; }
+  .home-header p { font-size: 1rem; opacity: 0.9; }
+  .home-xp { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 16px; }
+  .xp-badge {
+    background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 99px;
+    font-weight: 700; font-size: 0.95rem;
+  }
+  .modules-list { padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; max-width: 600px; margin: 0 auto; width: 100%; }
+  .module-card {
+    background: var(--white); border-radius: var(--radius); padding: 20px;
+    box-shadow: var(--shadow); border: 2px solid var(--border);
+    cursor: pointer; transition: all 0.18s ease; position: relative; overflow: hidden;
+  }
+  .module-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+  .module-card.locked { opacity: 0.55; cursor: not-allowed; }
+  .module-card.locked:hover { transform: none; box-shadow: var(--shadow); border-color: var(--border); }
+  .module-card.done { border-color: var(--success); }
+  .module-top { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .module-icon { font-size: 2rem; width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .mod1 .module-icon { background: #ede9fe; }
+  .mod2 .module-icon { background: #dbeafe; }
+  .mod3 .module-icon { background: #fef9c3; }
+  .mod4 .module-icon { background: #dcfce7; }
+  .module-info { flex: 1; }
+  .module-num { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+  .module-name { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-top: 1px; }
+  .module-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+  .module-progress-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 12px; }
+  .module-progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+  .mod1 .module-progress-fill { background: #7c3aed; }
+  .mod2 .module-progress-fill { background: #2563eb; }
+  .mod3 .module-progress-fill { background: #d97706; }
+  .mod4 .module-progress-fill { background: #16a34a; }
+  .module-badge {
+    position: absolute; top: 14px; right: 14px;
+    font-size: 1.2rem;
+  }
+  .lock-icon { font-size: 1.1rem; }
+
+  /* ---- GENERIC CONTENT WRAPPER ---- */
+  .content { flex: 1; padding: 24px 20px; max-width: 680px; margin: 0 auto; width: 100%; }
+
+  /* ---- CARDS ---- */
+  .card {
+    background: var(--white); border-radius: var(--radius); padding: 24px;
+    box-shadow: var(--shadow); margin-bottom: 16px;
+  }
+  .card h2 { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; }
+  .card p { font-size: 0.93rem; color: #334155; line-height: 1.65; }
+  .card h3 { font-size: 1rem; font-weight: 700; margin: 14px 0 6px; color: var(--primary-dark); }
+
+  /* ---- BUTTONS ---- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 28px; border-radius: 12px; font-size: 1rem; font-weight: 700;
+    border: none; cursor: pointer; transition: all 0.15s; text-decoration: none;
+  }
+  .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 12px; }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+  .btn-outline:hover { background: var(--primary-light); }
+  .btn-success { background: var(--success); color: white; }
+  .btn-success:hover { background: #15803d; }
+  .btn-sm { padding: 8px 18px; font-size: 0.88rem; border-radius: 9px; font-weight: 600; }
+  .btn-full { width: 100%; }
+
+  /* ---- NP-KODEN SLIDES ---- */
+  .slide { display: none; }
+  .slide.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .slide-count { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-bottom: 14px; letter-spacing: 0.5px; }
+  .highlight-box {
+    background: var(--primary-light); border-left: 4px solid var(--primary);
+    border-radius: 0 10px 10px 0; padding: 14px 16px; margin: 12px 0;
+    font-size: 0.92rem; line-height: 1.6;
+  }
+  .highlight-box.success { background: var(--success-light); border-color: var(--success); }
+  .highlight-box.warning { background: var(--warning-light); border-color: var(--warning); }
+  .highlight-box.danger { background: var(--danger-light); border-color: var(--danger); }
+  .steps-list { list-style: none; padding: 0; }
+  .steps-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.92rem; line-height: 1.5;
+  }
+  .steps-list li:last-child { border-bottom: none; }
+  .step-num {
+    background: var(--primary); color: white; width: 26px; height: 26px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 800; flex-shrink: 0; margin-top: 1px;
+  }
+  .uppdragsord-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .uppdragsord-tag {
+    background: var(--primary-light); color: var(--primary-dark); border-radius: 10px;
+    padding: 8px 12px; font-weight: 700; font-size: 0.9rem; text-align: center;
+  }
+  .criteria-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin-top: 10px; }
+  .criteria-table th, .criteria-table td { padding: 8px 10px; text-align: left; border: 1px solid var(--border); }
+  .criteria-table th { background: var(--neutral-light); font-weight: 700; }
+  .criteria-table tr:nth-child(even) td { background: #fafafa; }
+  .grade-e { color: #d97706; font-weight: 700; }
+  .grade-c { color: #2563eb; font-weight: 700; }
+  .grade-a { color: #16a34a; font-weight: 700; }
+
+  /* ---- QUIZ MODULE 2 ---- */
+  .quiz-question-card { background: var(--primary-light); border-radius: var(--radius); padding: 20px; margin-bottom: 18px; }
+  .quiz-question-card p { font-size: 0.95rem; line-height: 1.65; color: var(--primary-dark); font-weight: 500; }
+  .quiz-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); margin-bottom: 8px; }
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+  .option-btn {
+    background: white; border: 2px solid var(--border); border-radius: 12px;
+    padding: 13px 16px; font-size: 0.92rem; text-align: left; cursor: pointer;
+    transition: all 0.15s; font-weight: 500; color: var(--text);
+  }
+  .option-btn:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+  .option-btn.correct { border-color: var(--success); background: var(--success-light); color: var(--success); font-weight: 700; }
+  .option-btn.wrong { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
+  .option-btn.disabled { pointer-events: none; opacity: 0.6; }
+  .feedback-box {
+    padding: 14px 16px; border-radius: 12px; margin-top: 12px;
+    font-size: 0.92rem; line-height: 1.6; display: none;
+  }
+  .feedback-box.show { display: block; animation: fadeIn 0.3s ease; }
+  .feedback-box.correct { background: var(--success-light); color: #15803d; border-left: 4px solid var(--success); }
+  .feedback-box.wrong { background: var(--danger-light); color: #991b1b; border-left: 4px solid var(--danger); }
+  .feedback-title { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
+
+  /* ---- MODULE 3: BEDÖM SVARET ---- */
+  .judge-question { background: #f8faff; border: 2px solid var(--primary-light); border-radius: var(--radius); padding: 18px; margin-bottom: 20px; }
+  .judge-question p { font-size: 0.93rem; line-height: 1.65; color: var(--text); }
+  .answer-cards { display: flex; flex-direction: column; gap: 14px; margin: 8px 0 18px; }
+  .answer-card {
+    background: white; border: 2px solid var(--border); border-radius: var(--radius-sm);
+    padding: 16px; cursor: pointer; transition: all 0.15s;
+  }
+  .answer-card:hover { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+  .answer-card.selected { border-color: var(--primary); background: var(--primary-light); }
+  .answer-card.correct-answer { border-color: var(--success); background: var(--success-light); }
+  .answer-card.wrong-answer { border-color: var(--danger); background: var(--danger-light); }
+  .answer-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; }
+  .answer-text { font-size: 0.9rem; line-height: 1.6; color: var(--text); }
+  .grade-reveal { display: none; margin-top: 10px; }
+  .grade-reveal.show { display: block; animation: fadeIn 0.3s ease; }
+  .grade-tag {
+    display: inline-block; padding: 3px 12px; border-radius: 99px; font-size: 0.8rem; font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .grade-tag.e { background: #fef3c7; color: #92400e; }
+  .grade-tag.c { background: #dbeafe; color: #1e40af; }
+  .grade-tag.a { background: #dcfce7; color: #166534; }
+  .grade-explain { font-size: 0.87rem; line-height: 1.6; color: #334155; }
+  .grade-explain strong { color: var(--text); }
+
+  /* ---- MODULE 4: SKRIV OCH JÄMFÖR ---- */
+  .write-question { background: #f8faff; border: 2px solid var(--primary-light); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; }
+  .write-question p { font-size: 0.95rem; line-height: 1.7; color: var(--text); }
+  .checklist-items { margin-top: 8px; }
+  .checklist-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem;
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--primary); flex-shrink: 0; }
+  .checklist-item label { cursor: pointer; line-height: 1.5; color: var(--text); }
+  textarea.answer-input {
+    width: 100%; min-height: 160px; padding: 14px; border: 2px solid var(--border);
+    border-radius: 12px; font-size: 0.93rem; line-height: 1.65; font-family: inherit;
+    resize: vertical; transition: border-color 0.15s;
+  }
+  textarea.answer-input:focus { outline: none; border-color: var(--primary); }
+  .model-answer { display: none; margin-top: 16px; }
+  .model-answer.show { display: block; animation: fadeIn 0.4s ease; }
+  .model-answer-box {
+    background: var(--success-light); border: 2px solid var(--success);
+    border-radius: var(--radius-sm); padding: 18px;
+  }
+  .model-answer-box h4 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--success); margin-bottom: 10px; }
+  .model-answer-box p { font-size: 0.92rem; line-height: 1.7; color: #15803d; }
+
+  /* ---- RESULT SCREEN ---- */
+  .result-screen { text-align: center; padding: 40px 24px; }
+  .result-emoji { font-size: 4rem; margin-bottom: 16px; }
+  .result-title { font-size: 1.6rem; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+  .result-sub { font-size: 1rem; color: var(--text-muted); margin-bottom: 24px; }
+  .result-stars { font-size: 2.5rem; letter-spacing: 4px; margin-bottom: 24px; }
+  .xp-earned {
+    background: var(--primary-light); border-radius: 99px; padding: 10px 24px;
+    display: inline-block; font-weight: 800; color: var(--primary); font-size: 1.1rem; margin-bottom: 24px;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 400px) {
+    .uppdragsord-grid { grid-template-columns: 1fr; }
+    .home-header h1 { font-size: 1.7rem; }
+  }
+
+  /* ---- TRANSITIONS ---- */
+  .screen.active { animation: screenIn 0.25s ease; }
+  @keyframes screenIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .nav-arrows { display: flex; justify-content: space-between; margin-top: 20px; gap: 12px; }
+  .nav-arrows .btn { flex: 1; }
+
+  .pill {
+    display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;
+    background: var(--primary-light); color: var(--primary-dark); margin-left: 6px;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+</style>
+</head>
+<body>
+
+<!-- ==================== HOME SCREEN ==================== -->
+<div id="home" class="screen active">
+  <div class="home-header">
+    <h1>📚 plugganp.se</h1>
+    <p>Träna på A-nivå — Religion åk 9</p>
+    <div class="home-xp">
+      <span class="xp-badge">⚡ <span id="total-xp">0</span> XP</span>
+      <span class="xp-badge">🔥 Streak: <span id="streak">0</span></span>
+    </div>
+  </div>
+  <div class="modules-list">
+    <div class="module-card mod1" onclick="openModule('mod1')">
+      <div class="module-top">
+        <div class="module-icon">🔑</div>
+        <div class="module-info">
+          <div class="module-num">Modul 1</div>
+          <div class="module-name">NP-koden</div>
+        </div>
+      </div>
+      <div class="module-desc">Förstå hur läraren rättar och vad A-nivå egentligen kräver.</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="m1-bar" style="width:0%"></div></div>
+      <div class="module-badge" id="m1-badge"></div>
+    </div>
+    <div class="module-card mod2" onclick="openModule('mod2')">
+      <div class="module-top">
+        <div class="module-icon">🔍</div>
+        <div class="module-info">
+          <div class="module-num">Modul 2</div>
+          <div class="module-name">Avkoda frågan</div>
+        </div>
+      </div>
+      <div class="module-desc">Hitta uppdragsorden och förstå exakt vad frågan kräver av dig.</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="m2-bar" style="width:0%"></div></div>
+      <div class="module-badge" id="m2-badge"></div>
+    </div>
+    <div class="module-card mod3" onclick="openModule('mod3')">
+      <div class="module-top">
+        <div class="module-icon">⚖️</div>
+        <div class="module-info">
+          <div class="module-num">Modul 3</div>
+          <div class="module-name">Bedöm svaret</div>
+        </div>
+      </div>
+      <div class="module-desc">Läs tre svar och välj vilket som är A. Lär dig se skillnaden.</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="m3-bar" style="width:0%"></div></div>
+      <div class="module-badge" id="m3-badge"></div>
+    </div>
+    <div class="module-card mod4" onclick="openModule('mod4')">
+      <div class="module-top">
+        <div class="module-icon">✍️</div>
+        <div class="module-info">
+          <div class="module-num">Modul 4</div>
+          <div class="module-name">Skriv och jämför</div>
+        </div>
+      </div>
+      <div class="module-desc">Skriv ditt eget svar och jämför med ett modellsvar på A-nivå.</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="m4-bar" style="width:0%"></div></div>
+      <div class="module-badge" id="m4-badge"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODULE 1: NP-KODEN ==================== -->
+<div id="mod1" class="screen">
+  <div class="topbar">
+    <button class="btn-back" onclick="goHome()">←</button>
+    <span class="topbar-title">🔑 NP-koden</span>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m1-progress" style="width:0%"></div></div>
+
+  <div class="content">
+    <!-- SLIDE 1 -->
+    <div class="slide active" id="m1-s1">
+      <div class="slide-count" id="m1-slide-count">Del 1 av 5</div>
+      <div class="card">
+        <h2>🎯 Hur läraren rättar — och hur du kan utnyttja det</h2>
+        <p>Läraren rättar inte efter magkänsla. Det finns en exakt rättningsmall och läraren <strong>måste</strong> följa den.</p>
+        <div class="highlight-box">
+          Rättningsmallen är din bästa vän. Om du vet vad som krävs för A — och levererar exakt det — <strong>måste</strong> läraren ge dig A.
+        </div>
+        <p style="margin-top:12px">Läraren kontrollerar en sak i taget: Finns rätt antal argument? Är de förtydligade? Finns problematisering? Inget annat spelar roll.</p>
+      </div>
+      <div class="card">
+        <h3>⚠️ Vad läraren INTE kan göra</h3>
+        <p>Läraren kan inte ge poäng för något du "troligtvis menade". Läraren kan bara bedöma det som faktiskt <strong>står</strong> i din text.</p>
+        <div class="highlight-box warning">
+          Skriv explicit. Om du menar att ett argument visar på konsekvensen X — skriv ut det. Förutsätt aldrig att läraren förstår vad du menar.
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="m1Next()">Nästa →</button>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide" id="m1-s2">
+      <div class="slide-count">Del 2 av 5</div>
+      <div class="card">
+        <h2>🔤 Uppdragsorden — nycklarna till frågan</h2>
+        <p>Varje fråga innehåller ett eller flera <strong>uppdragsord</strong>. De talar om exakt vad du ska göra. Att missa dem är det vanligaste misstaget.</p>
+        <div class="uppdragsord-grid">
+          <div class="uppdragsord-tag">Resonera</div>
+          <div class="uppdragsord-tag">Argumentera</div>
+          <div class="uppdragsord-tag">Jämför</div>
+          <div class="uppdragsord-tag">Förklara</div>
+          <div class="uppdragsord-tag">Likhet</div>
+          <div class="uppdragsord-tag">Skillnad</div>
+          <div class="uppdragsord-tag">Konsekvens</div>
+          <div class="uppdragsord-tag">Motivera</div>
+          <div class="uppdragsord-tag">Problematisera</div>
+          <div class="uppdragsord-tag">Förtydliga</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>📌 Tre viktigaste uppdragsorden</h3>
+        <ul class="steps-list">
+          <li><div class="step-num">1</div><div><strong>Förtydliga med exempel/förklaring:</strong> Du ska inte bara påstå — du ska visa vad du menar med ett konkret exempel eller en förklaring av varför.</div></li>
+          <li><div class="step-num">2</div><div><strong>Resonera:</strong> Tänk högt och visa din tankeprocess. Det räcker inte att rada upp fakta — du ska koppla ihop dem och dra slutsatser.</div></li>
+          <li><div class="step-num">3</div><div><strong>Problematisera:</strong> Visa att du ser att en sak kan ses från olika håll, eller att det finns undantag och nyanser.</div></li>
+        </ul>
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
+        <button class="btn btn-primary" onclick="m1Next()" style="margin:0">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide" id="m1-s3">
+      <div class="slide-count">Del 3 av 5</div>
+      <div class="card">
+        <h2>📊 Vad krävs för E, C och A?</h2>
+        <p>De tre frågetyperna du möter mest på NP har tydliga krav per betygsnivå. Här är de i korthet:</p>
+        <h3>Typ 1: Likheter och skillnader</h3>
+        <table class="criteria-table">
+          <tr><th>Nivå</th><th>Krav</th></tr>
+          <tr><td class="grade-e">E</td><td>Minst 2 likheter ELLER 2 skillnader (inget förtydligande krävs)</td></tr>
+          <tr><td class="grade-c">C</td><td>2 likheter + 1 skillnad (eller vice versa), varav 2 förtydligade med ex/förklaring</td></tr>
+          <tr><td class="grade-a">A</td><td>2 likheter + 2 skillnader, <em>var och en</em> förtydligad med ex/förklaring</td></tr>
+        </table>
+        <h3>Typ 2: Argumentera med etiska modeller</h3>
+        <table class="criteria-table">
+          <tr><th>Nivå</th><th>Krav</th></tr>
+          <tr><td class="grade-e">E</td><td>1 korrekt etisk modell + 1 argument + 1 förtydligande</td></tr>
+          <tr><td class="grade-c">C</td><td>2 modeller + 2 argument, varav 1 förtydligat med 2 ex/förklaringar</td></tr>
+          <tr><td class="grade-a">A</td><td>2 modeller + 2 argument, varav 2 förtydligade med 2 ex/förklaringar + <strong>problematisering</strong></td></tr>
+        </table>
+        <h3>Typ 3: Källkritik</h3>
+        <table class="criteria-table">
+          <tr><th>Nivå</th><th>Krav</th></tr>
+          <tr><td class="grade-e">E</td><td>1 motivering för bra källa + 1 för dålig, var och en med 1 ex/förklaring</td></tr>
+          <tr><td class="grade-c">C</td><td>2 för bra + 2 för dåliga, var och en med 1 ex/förklaring</td></tr>
+          <tr><td class="grade-a">A</td><td>2 för bra + 2 för dåliga, <em>varav 2</em> förtydligade med minst 2 ex/förklaringar</td></tr>
+        </table>
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
+        <button class="btn btn-primary" onclick="m1Next()" style="margin:0">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide" id="m1-s4">
+      <div class="slide-count">Del 4 av 5</div>
+      <div class="card">
+        <h2>✅ Din strategi för A — steg för steg</h2>
+        <ul class="steps-list">
+          <li><div class="step-num">1</div><div><strong>Läs frågan noga.</strong> Hitta alla uppdragsord. Räkna hur många delar som krävs (t.ex. "två likheter och två skillnader").</div></li>
+          <li><div class="step-num">2</div><div><strong>Gör en miniplan.</strong> Skriv ner dina punkter på ett kladdpapper. Bocka av dem när du skriver. Börja inte skriva förrän du har din plan.</div></li>
+          <li><div class="step-num">3</div><div><strong>Förtydliga varje punkt.</strong> Efter varje argument/likhet/skillnad — skriv ett exempel ELLER en förklaring av varför/hur. Annars räknas den inte på A-nivå.</div></li>
+          <li><div class="step-num">4</div><div><strong>Problematisera</strong> när frågan kräver det. Visa att du ser en annan sida, ett undantag eller en nyans.</div></li>
+          <li><div class="step-num">5</div><div><strong>Kolla av</strong> innan du lämnar in. Har jag svarat på ALLT frågan ber om? Är varje punkt förtydligad?</div></li>
+        </ul>
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
+        <button class="btn btn-primary" onclick="m1Next()" style="margin:0">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: CHECKLISTAN -->
+    <div class="slide" id="m1-s5">
+      <div class="slide-count">Del 5 av 5</div>
+      <div class="card">
+        <h2>📋 A-checklistan</h2>
+        <p>Spara den här — den är din bästa vän på provet.</p>
+        <div style="margin-top:14px" class="checklist-items">
+          <div class="checklist-item"><input type="checkbox" id="cl1"><label for="cl1">Jag har hittat alla uppdragsord i frågan</label></div>
+          <div class="checklist-item"><input type="checkbox" id="cl2"><label for="cl2">Jag har gjort en miniplan med alla punkter frågan kräver</label></div>
+          <div class="checklist-item"><input type="checkbox" id="cl3"><label for="cl3">Jag svarar bara på det frågan ber om — inget mer, inget mindre</label></div>
+          <div class="checklist-item"><input type="checkbox" id="cl4"><label for="cl4">Varje argument/likhet/skillnad är förtydligat med ex eller förklaring</label></div>
+          <div class="checklist-item"><input type="checkbox" id="cl5"><label for="cl5">Om A-nivån kräver problematisering — jag har visat en annan sida</label></div>
+          <div class="checklist-item"><input type="checkbox" id="cl6"><label for="cl6">Jag har räknat att alla delar (t.ex. 2 likheter + 2 skillnader) finns med</label></div>
+        </div>
+      </div>
+      <div class="highlight-box success">
+        <strong>🎯 Kom ihåg:</strong> Du får bara poäng för det som faktiskt <em>står</em> i din text. Var explicit. Skriv ut det du menar.
+      </div>
+      <div class="nav-arrows">
+        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
+        <button class="btn btn-success" onclick="completeModule('mod1', 'm1')" style="margin:0;flex:1">🎉 Klar med NP-koden!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODULE 2: AVKODA FRÅGAN ==================== -->
+<div id="mod2" class="screen">
+  <div class="topbar">
+    <button class="btn-back" onclick="goHome()">←</button>
+    <span class="topbar-title">🔍 Avkoda frågan</span>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m2-progress" style="width:0%"></div></div>
+  <div class="content" id="m2-content">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<!-- ==================== MODULE 3: BEDÖM SVARET ==================== -->
+<div id="mod3" class="screen">
+  <div class="topbar">
+    <button class="btn-back" onclick="goHome()">←</button>
+    <span class="topbar-title">⚖️ Bedöm svaret</span>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m3-progress" style="width:0%"></div></div>
+  <div class="content" id="m3-content">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<!-- ==================== MODULE 4: SKRIV OCH JÄMFÖR ==================== -->
+<div id="mod4" class="screen">
+  <div class="topbar">
+    <button class="btn-back" onclick="goHome()">←</button>
+    <span class="topbar-title">✍️ Skriv och jämför</span>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m4-progress" style="width:0%"></div></div>
+  <div class="content" id="m4-content">
+    <!-- Rendered by JS -->
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+
+const quizData = [
+  {
+    q: `Resonera om <strong>två likheter</strong> och <strong>två skillnader</strong> vad gäller synen på livet efter döden mellan <strong>islam</strong> och <strong>kristendomen</strong>. Förtydliga likheterna och skillnaderna med <strong>exempel och förklaringar</strong>.`,
+    question: "Vad är det korrekta uppdragsord och vad exakt kräver A-nivå?",
+    options: [
+      "Resonera — räcker med 2 likheter ELLER 2 skillnader utan förklaringar",
+      "Argumentera — 2 argument med etiska modeller",
+      "Resonera — 2 likheter + 2 skillnader, var och en förtydligad med ex/förklaring ✓",
+      "Förklara — lista fakta om de två religionerna"
+    ],
+    correct: 2,
+    feedback: `Rätt! Uppdragsord: <strong>Resonera</strong>. För A krävs exakt 2 likheter + 2 skillnader — och <em>var och en</em> av dem ska förtydligas med ett exempel eller en förklaring. Det räcker inte att bara nämna dem.`
+  },
+  {
+    q: `<strong>Argumentera</strong> med hjälp av <strong>två etiska modeller</strong> kring om Sofia gör rätt och/eller fel om hon behåller en plånbok hon hittade på gatan. Förtydliga varje argument med <strong>två</strong> exempel, förklaringar eller konsekvenser.`,
+    question: "Vad är uppdragsorden och vad krävs specifikt för A?",
+    options: [
+      "Argumentera + 2 etiska modeller + 2 argument, varav 2 förtydligade med 2 ex/konsekvenser + problematisering ✓",
+      "Resonera + en etisk modell + ett argument per sida",
+      "Argumentera + 3 argument + 1 förklaring vardera",
+      "Motivera + 2 exempel + 1 etisk modell"
+    ],
+    correct: 0,
+    feedback: `Rätt! Uppdragsord: <strong>Argumentera</strong> + <strong>etiska modeller</strong>. A-nivå kräver: 2 korrekta etiska modeller, minst 2 relevanta argument, <em>varav minst 2</em> förtydligade med 2 ex/förklaringar/konsekvenser, PLUS en problematisering (visa att en modell kan ge argument för BÅDA sidor).`
+  },
+  {
+    q: `Emma ska skriva ett skolarbete om ramadan. <strong>Motivera</strong> varför <strong>två</strong> av fyra källor passar bra att använda. <strong>Motivera</strong> också varför <strong>två</strong> av källorna passar <strong>mindre bra</strong>. Förtydliga varje motivering med <strong>två</strong> exempel eller förklaringar.`,
+    question: "Hur många motiveringar med förtydliganden krävs för A-nivå?",
+    options: [
+      "2 motiveringar totalt, vardera med 1 förtydligande",
+      "4 motiveringar totalt (2 bra + 2 dåliga), varav 2 förtydligade med 2 ex och 2 med 1 ex ✓",
+      "4 motiveringar totalt med 1 förtydligande vardera",
+      "2 motiveringar för bra källor, ingen behöver förtydligas"
+    ],
+    correct: 1,
+    feedback: `Rätt! A-nivå i källkritik kräver: motivera 2 bra + 2 dåliga källor (totalt 4 motiveringar). <em>Minst 2</em> av dem ska förtydligas med 2 ex/förklaringar, och de övriga 2 med minst 1 ex/förklaring. Det är fler förtydliganden än C-nivå, som bara kräver 1 per motivering.`
+  },
+  {
+    q: `Läs följande fråga: "Adam hittar sin kompis dagbok och läser i den. <strong>Resonera</strong> om varför detta kan vara <strong>både rätt och fel</strong>. Använd <strong>två etiska modeller</strong> och <strong>förtydliga</strong> varje argument med exempel eller konsekvenser."`,
+    question: "Vad är det viktigaste tillägget på A-nivå som INTE krävs på C-nivå?",
+    options: [
+      "Fler etiska modeller — A kräver 3, C kräver 2",
+      "Problematisering — visa att samma etiska modell kan ge argument för BÅDA sidor ✓",
+      "Längre svar — minst 200 ord",
+      "Källhänvisning — ange varifrån du känner till de etiska modellerna"
+    ],
+    correct: 1,
+    feedback: `Rätt! Det avgörande för A kontra C i etikfrågor är <strong>problematiseringen</strong>: du ska visa att en och samma etiska modell kan ge argument <em>för att Adam gör rätt</em> OCH <em>för att Adam gör fel</em>. Det visar att du verkligen förstår hur modellerna fungerar.`
+  },
+  {
+    q: `"<strong>Resonera</strong> om hur en tonårings identitet kan påverkas på <strong>olika sätt</strong> av att tillhöra en religion. Välj en religion att utgå ifrån. Använd <strong>flera perspektiv</strong>, till exempel kön, bakgrund eller ålder."`,
+    question: "Vilket av dessa svar håller A-nivå?",
+    options: [
+      "Islam ger regler som muslimer ska följa, till exempel att be fem gånger om dagen.",
+      "Islam kan forma identiteten på flera sätt. En muslimsk tjej kan exempelvis uppleva att hennes religion stärker hennes känsla av gemenskap och tillhörighet. Å andra sidan kan en muslimsk kille i en icke-muslimsk klass känna sig annorlunda och ibland utanför, vilket också formas av religionen. ✓",
+      "Religionen påverkar identiteten hos alla ungdomar oavsett religion, vilket gör att ingen känner sig utanför.",
+      "Kristendom påverkar identiteten genom att ge ungdomar moral och värderingar."
+    ],
+    correct: 1,
+    feedback: `Rätt! Alternativ B är A-nivå för att det: (1) ger konkreta exempel med förklaring, (2) använder FLERA PERSPEKTIV (tjej vs kille, känsla av gemenskap vs utanförskap), och (3) problematiserar (religion kan vara positivt OCH negativt för identiteten). Alternativ A och D ger bara fakta utan förtydligande perspektiv.`
+  },
+  {
+    q: `"<strong>Argumentera</strong> för att ett påstående <strong>både kan vara korrekt och felaktigt</strong>. Skriv <strong>två argument</strong> som förtydligas med <strong>två</strong> förklaringar, konsekvenser eller exempel vardera."`,
+    question: "Vad händer om du bara förtydligar ett av argumenten med 2 förklaringar, och det andra bara med 1?",
+    options: [
+      "Du får A — ett förtydligande per argument räcker",
+      "Du får C — A kräver att minst 2 argument förtydligas med 2 ex/förklaringar ✓",
+      "Du får E — man måste ha 2 förtydliganden per argument för att ens nå E",
+      "Läraren avgör fritt vilket betyg det är värt"
+    ],
+    correct: 1,
+    feedback: `Rätt! Det är ett klassiskt C/A-misstag. C kräver att <em>minst ett</em> argument förtydligas med 2 ex/förklaringar. A kräver att <em>minst två</em> argument förtydligas med 2 ex/förklaringar. Missen ger C, inte A. Lösning: förtydliga ALLA argument med 2 ex/förklaringar så är du säker.`
+  },
+  {
+    q: `Uppgift: "<strong>Jämför</strong> hur hinduism och buddhism ser på karma och återfödelse. Ange <strong>två likheter</strong> och <strong>två skillnader</strong> och <strong>förtydliga</strong> varje punkt med ett <strong>exempel</strong> eller en <strong>förklaring</strong>."<br><br>Elev A skriver: "Likhet 1: Båda tror på karma. Skillnad 1: Hinduism har moksha, buddhism har nirvana."`,
+    question: "Vilket betyg ger svaret och varför?",
+    options: [
+      "A — innehåller en likhet och en skillnad",
+      "C — har en likhet och en skillnad, men bådas förtydligade",
+      "E — en likhet och en skillnad nämns, men ingen av dem är förtydligad ✓",
+      "Underkänt — svarar inte på frågan alls"
+    ],
+    correct: 2,
+    feedback: `Rätt! Svaret ger belägg för <strong>E</strong>. Eleven nämner en likhet ("båda tror på karma") och en skillnad (moksha/nirvana) — det räcker för E. Men: (1) inga förtydliganden/förklaringar, (2) bara 1 likhet och 1 skillnad istället för 2+2. För A krävs 2 likheter + 2 skillnader, <em>var och en</em> förtydligad.`
+  }
+];
+
+const judgeData = [
+  {
+    question: `<strong>Fråga:</strong> Resonera om två likheter och två skillnader i hur <strong>hinduism</strong> och <strong>islam</strong> ser på livet efter döden. Förtydliga varje likhet och skillnad med ett exempel eller en förklaring.`,
+    answers: [
+      {
+        label: "Svar 1",
+        text: `En likhet är att goda handlingar under livet påverkar vad som händer efter döden. I hinduismen kallas detta karma — ett gott liv leder till en bättre återfödelse, medan ett dåligt liv leder till en sämre. I islam väger Gud dina handlingar på domedagen, och den som levt rättfärdigt når paradiset.<br><br>En annan likhet är att båda religionerna har ett slutmål som innebär evig frid. I hinduismen kallas det moksha — ett tillstånd där själen förenas med Brahman och befrias från återfödelsens kretslopp. I islam är det jannah, paradiset, där den troende lever för evigt.<br><br>En skillnad är synen på återfödelse: hinduism tror att man återföds gång på gång tills karma är upparbetad, medan muslimer tror att varje människa lever ett enda liv. En annan skillnad är att islam har en formell domdag, Yawm al-Qiyama, då alla uppstår och döms inför Gud, medan hinduismen saknar en sådan ceremoni.`,
+        grade: "a",
+        explain: `<strong>A-nivå.</strong> Svaret innehåller exakt <strong>2 likheter + 2 skillnader</strong> — vad A kräver. <em>Var och en</em> av de fyra punkterna förtydligas med en tydlig förklaring eller ett exempel: karma förklaras (bättre/sämre återfödelse), moksha förklaras (förenas med Brahman), reinkarnation kontrasteras mot ett enda liv, och domdag specificeras med rätt begrepp (Yawm al-Qiyama).`
+      },
+      {
+        label: "Svar 2",
+        text: `Hinduism och islam är två stora religioner och de har en del gemensamt vad gäller döden. Båda religionerna talar om vad som händer när man dör och att livet man lever spelar roll. Goda gärningar är viktiga i båda religionerna, även om de kallas olika saker. En annan likhet är att det finns ett slags slutmål att sträva mot i båda fallen.<br><br>En skillnad är att hinduism tror på reinkarnation men islam inte gör det. I islam tror man att man möter Gud efter döden. Det finns också paradiset i islam och moksha i hinduismen, som är olika sätt att beskriva ett liv efter döden.<br><br>Hinduismen är en av världens äldsta religioner och har sitt ursprung i Indien. Islam grundades av profeten Muhammed på 600-talet e.Kr. Båda har påverkat stora delar av världen och har många hundratals miljoner anhängare.`,
+        grade: "e",
+        explain: `<strong>E-nivå.</strong> Svaret nämner en likhet ("goda gärningar spelar roll") och en skillnad (reinkarnation vs möta Gud). Det räcker för E. Men ingen av punkterna förtydligas med ett tydligt exempel eller en förklaring — "goda gärningar kallas olika saker" och "ett slags slutmål" är för vaga. Sista stycket är helt irrelevant för frågan (historik/geografi). För A krävs 2+2 med förtydliganden.`
+      },
+      {
+        label: "Svar 3",
+        text: `En likhet är att goda handlingar under livet påverkar vad som händer efter döden — i hinduismen via karma och i islam via Guds dom på domedagen. En annan likhet är att båda religionerna tror att det finns ett slutmål: moksha i hinduismen och jannah i islam.<br><br>En skillnad är att hinduism tror på reinkarnation, alltså att man återföds gång på gång beroende på sin karma, medan islam tror att varje människa lever ett enda liv. En annan skillnad är att islam har en tydlig domdag, Yawm al-Qiyama, medan hinduismen inte har en motsvarande ceremoni.<br><br>Sammanfattningsvis delar hinduism och islam grundtanken om att livet man lever spelar roll efter döden, men de skiljer sig i hur de beskriver vad som faktiskt händer när man dör och vilket slut resan leder till.`,
+        grade: "c",
+        explain: `<strong>C-nivå.</strong> Svaret har <strong>2 likheter + 2 skillnader</strong> — strukturen är rätt. Men bara <em>2 av 4</em> punkter förtydligas tillräckligt: reinkarnation förklaras ("återföds gång på gång beroende på karma") och domdag nämns med rätt begrepp. Likhet 2 (moksha/jannah) och Skillnad 2 (domdag) saknar riktiga förklaringar av <em>vad</em> de innebär. Sista stycket tillför ingen ny information. För A krävs att <em>alla fyra</em> förtydligas.`
+      }
+    ],
+    correctIndex: 0
+  },
+  {
+    question: `<strong>Fråga:</strong> Argumentera med hjälp av <strong>två etiska modeller</strong> kring om Sofia gör rätt och/eller fel om hon behåller en plånbok med 500 kronor som hon hittat på gatan. Förtydliga varje argument med <strong>två</strong> exempel, förklaringar eller konsekvenser.`,
+    answers: [
+      {
+        label: "Svar 1",
+        text: `Ur ett pliktetiskt perspektiv gör Sofia fel. Det finns en regel — och i Sverige en lag — om att hittegods ska lämnas in till polisen. Pliktetiken säger att regler gäller oavsett omständigheter, och om alla bröt mot dem när det passade dem, skulle samhällets ordning urholkas.<br><br>Ur ett konsekvensetiskt perspektiv kan Sofia ha gjort fel om ägaren verkligen behöver pengarna — till exempel för mat eller räkningar — och konsekvensen är att ägaren lider ekonomiskt. Men konsekvensetiken kan lika gärna ge argument för att Sofia gör rätt: om chansen att hitta ägaren är minimal och Sofia använder pengarna till något nyttigt, är den totala nyttan positiv.<br><br>Det visar att konsekvensetiken inte ger ett självklart svar, utan beror på vilka konsekvenser man väger. Samma modell kan alltså användas för att argumentera för båda sidor — vilket visar hur komplex den etiska bedömningen är.`,
+        grade: "a",
+        explain: `<strong>A-nivå.</strong> Två modeller används korrekt (pliktetik och konsekvensetik). Pliktetiken: argument (bryta mot regler är fel) + 2 förtydliganden (hittegods-lag; samhällets ordning). Konsekvensetiken: argument för FEL (ägaren lider, ex. mat/räkningar) + argument för RÄTT (minimal chans att hitta ägaren, total nytta positiv). Avslutas med explicit <strong>problematisering</strong>: samma modell ger argument för båda sidor. Det är just vad A-nivå kräver.`
+      },
+      {
+        label: "Svar 2",
+        text: `Sofia gör fel om hon behåller plånboken. Det är inte hennes pengar och ägaren vill ha tillbaka dem. Att vara ärlig är viktigt i ett fungerande samhälle och de flesta skulle nog tycka att det är fel att behålla andras pengar.<br><br>Enligt konsekvensetiken tittar man på följderna. Om Sofia behåller pengarna förlorar ägaren 500 kronor. Det är en dålig konsekvens för ägaren. Konsekvensen för Sofia är att hon får pengar hon inte tjänat. Det verkar inte rättvist.<br><br>Man kan också tänka på vad som händer om alla behöll hittegods. Då skulle ingen lämna in saker och samhället skulle bli sämre. Konsekvensetik, pliktetik och sinnelagsetik är tre etiska modeller som kan användas för att bedöma handlingar. De ger ofta olika svar, men i det här fallet pekar nog de flesta åt samma håll.`,
+        grade: "e",
+        explain: `<strong>E-nivå.</strong> Konsekvensetiken nämns och används delvis korrekt, men bara <em>en</em> etisk modell används på riktigt — de andra nämns löst i sista meningen utan att tillämpas. Argumentet förtydligas bara med ett förtydligande (ägaren förlorar 500 kr). Sista stycket listar modeller utan att använda dem. För C krävs 2 korrekta modeller med argument; för A krävs dessutom 2 förtydliganden per argument + problematisering.`
+      },
+      {
+        label: "Svar 3",
+        text: `Ur ett konsekvensetiskt perspektiv gör Sofia fel om hon behåller plånboken. Om ägaren desperat letar efter pengarna — kanske är det veckans matpengar — orsakar Sofias beslut verkligt lidande. Dessutom finns en chans att Sofia hittar ägaren om hon lämnar in plånboken till polisen, och om hon lyckas blir konsekvensen positiv för båda.<br><br>Ur ett pliktetiskt perspektiv gör Sofia också fel, eftersom det finns en samhällelig plikt att lämna in hittegods. Regler och lagar är till för att samhället ska fungera och för att skydda äganderätten.<br><br>Sammanfattningsvis pekar båda modellerna åt samma håll i det här fallet: Sofia bör lämna in plånboken. Att ta ansvar för sina handlingar och tänka på andra är grundläggande i etiken, och det är precis vad de etiska modellerna hjälper oss att synliggöra.`,
+        grade: "c",
+        explain: `<strong>C-nivå.</strong> Två korrekta modeller (konsekvensetik och pliktetik). Det konsekvensetiska argumentet förtydligas med 2 förklaringar (matpengar = lidande; lämna in = positiv konsekvens). Det pliktetiska förtydligas med bara 1 förklaring (skydda äganderätten). Viktigast: <strong>ingen problematisering</strong> — svaret visar aldrig att en modell kan ge argument för <em>båda</em> sidor. Det är exakt det som skiljer A från C.`
+      }
+    ],
+    correctIndex: 0
+  },
+  {
+    question: `<strong>Fråga:</strong> Leila ska skriva ett skolarbete om ramadan. Hon har hittat fyra möjliga källor:<br><br>
+    <strong>Källa 1:</strong> En intervju med en imam från en moské i Stockholm, publicerad i SVT Nyheter.<br>
+    <strong>Källa 2:</strong> En blogg av en 17-årig muslimsk tjej som berättar om hur hennes familj firar ramadan.<br>
+    <strong>Källa 3:</strong> Ett elevarbete om ramadan hämtat från en okänd webbsida.<br>
+    <strong>Källa 4:</strong> Nationalencyklopedin (NE) – ett vetenskapligt uppslagsverk.<br><br>
+    Motivera varför <strong>två</strong> av källorna passar bra. Motivera varför <strong>två</strong> passar <strong>mindre bra</strong>. Förtydliga varje motivering med <strong>två</strong> exempel eller förklaringar.`,
+    answers: [
+      {
+        label: "Svar 1",
+        text: `Källa 1 passar bra eftersom imamen är expert på islam och vet hur ramadan firas i praktiken — han leder gudstjänster och är en förstahandskälla. Dessutom är SVT en etablerad nyhetskälla med redaktionell granskning, vilket ökar trovärdigheten.<br><br>Källa 4 passar bra eftersom NE är skrivet av ämnesexperter. Informationen faktagranskas noggrant, vilket minskar risken för fel.<br><br>Källa 3 passar mindre bra eftersom det är ett elevarbete från en okänd webbsida och man inte vet var eleven har hämtat sin information. Man kan heller inte kontrollera om eleven var källkritisk när hen samlade in fakta.<br><br>Källa 2 passar mindre bra eftersom bloggtjejen bara berättar om sin familjs sätt att fira ramadan, vilket inte är representativt för alla muslimer. Hon är dessutom 17 år och har förmodligen inte studerat ramadan ur ett teologiskt eller historiskt perspektiv.`,
+        grade: "a",
+        explain: `<strong>A-nivå.</strong> Fyra motiveringar ges (2 bra + 2 dåliga). Källa 1 förtydligas med 2 förklaringar (förstahandskälla/expert + SVT:s granskning). Källa 4 förtydligas med 2 förklaringar (ämnesexperter + faktagranskning). Källa 3 förtydligas med 2 förklaringar (okänd källa + kan ej kontrollera källkritik). Källa 2 förtydligas med 2 förklaringar (ej representativ + saknar teologisk kunskap). Alla fyra motiveringar har 2 förtydliganden — det överstiger A-kravet.`
+      },
+      {
+        label: "Svar 2",
+        text: `Källa 1 passar bra eftersom imamen är expert på islam och vet hur ramadan firas. Källa 4 passar bra eftersom NE är ett pålitligt uppslagsverk med faktagranskat innehåll.<br><br>Källa 3 passar inte lika bra eftersom det är ett elevarbete och man inte vet vilka källor eleven har använt. Källa 2 passar inte lika bra eftersom bloggtjejen bara berättar om sin familjs traditioner och inte om ramadan i allmänhet.<br><br>Det är viktigt att vara källkritisk när man skriver skolarbeten. Man bör alltid fråga sig vem som har skrivit en källa, varför de har gjort det och om informationen kan kontrolleras på annat håll. Det gäller särskilt internet, där vem som helst kan publicera information utan att den granskas av experter.`,
+        grade: "c",
+        explain: `<strong>C-nivå.</strong> Fyra motiveringar ges (2 bra + 2 dåliga). Källa 1: 1 förklaring (expert/vet hur det firas). Källa 4: 1 förklaring (faktagranskat). Källa 3: 1 förklaring (vet ej vilka källor). Källa 2: 1 förklaring (familjs traditioner ≠ generellt). Var och en har <em>exakt 1</em> förtydligande — det räcker för C. Sista stycket om källkritik generellt tillför inget till svaret. För A krävs att minst 2 av motiveringarna förtydligas med 2 ex/förklaringar.`
+      },
+      {
+        label: "Svar 3",
+        text: `Källa 1 passar bra för att imamen vet mycket om ramadan. Det är en trovärdig källa. Källa 4 passar bra för att NE är pålitligt och används av många i skolan.<br><br>Källa 3 passar inte att använda för att det är ett elevarbete. Det kan vara fel i det. Källa 2 passar inte heller riktigt, eftersom det är en blogg och bloggar kan vara opålitliga.<br><br>Sammanfattningsvis bör Leila välja källa 1 och källa 4 till sitt arbete eftersom de är mest trovärdiga. Källorna 2 och 3 är sämre alternativ. Det är alltid viktigt att välja bra källor när man gör skolarbeten, och Leila har nu fyra alternativ att ta ställning till.`,
+        grade: "e",
+        explain: `<strong>E-nivå.</strong> Fyra källor kommenteras, men motiveringarna är mycket tunna. "Imamen vet mycket" och "NE är pålitligt" är påståenden utan förklaring. "Det kan vara fel" förklarar inte varför elevarbeten är opålitliga. "Bloggar kan vara opålitliga" är för generellt och kopplar inte till källan specifikt. Sista stycket är en sammanfattning som inte tillför ny information. För C krävs minst 1 tydlig förklaring per motivering.`
+      }
+    ],
+    correctIndex: 0
+  }
+];
+
+const writeData = [
+  {
+    question: `Resonera om <strong>två likheter</strong> och <strong>två skillnader</strong> i hur <strong>buddhism</strong> och <strong>kristendom</strong> ser på hur en människa bör leva ett gott liv. Förtydliga likheterna och skillnaderna med exempel och förklaringar.`,
+    checklist: [
+      "Jag har hittat uppdragsorden: Resonera + 2 likheter + 2 skillnader + förtydliga",
+      "Jag har gjort en miniplan med mina 4 punkter (2L + 2S)",
+      "Var och en av mina 4 punkter förtydligas med ett exempel eller en förklaring",
+      "Jag svarar bara på det frågan ber om"
+    ],
+    modelAnswer: `Buddhismen och kristendomen delar en del gemensamma värderingar men skiljer sig på viktiga punkter.<br><br>
+    En likhet är att båda religionerna betonar vikten av att hjälpa andra människor. Inom kristendomen kallas detta kärleksbudet — man ska älska sin nästa. Inom buddhismen handlar det om medkänsla (karuna), alltså att aktivt vilja minska andras lidande.<br><br>
+    En annan likhet är att båda religionerna lär att man bör undvika att göra andra illa. Kristendomen har budorden som förbjuder mord och stöld, medan buddhismens fem förbud (sila) förbjuder att skada levande varelser.<br><br>
+    En skillnad är att kristendomen betonar vikten av en personlig relation med Gud genom bön, bikten och deltagande i gudstjänst — det är en viktig del av det goda livet. Buddhismen fokuserar däremot på inre träning (meditation) snarare än kontakt med en gud, eftersom buddhismen inte är teistisk i samma mening.<br><br>
+    En annan skillnad är att kristendomen ser livet som en gåva från Gud att förvalta väl, medan buddhismen lär att lidandet beror på begär och att man bör sträva efter att släppa taget om materiella och emotionella önskningar för att nå nirvana.`
+  },
+  {
+    question: `<strong>Argumentera</strong> med hjälp av <strong>två etiska modeller</strong> kring om det är rätt och/eller fel att ljuga för att skydda en vän. Förtydliga varje argument med <strong>två</strong> förklaringar, konsekvenser eller exempel.`,
+    checklist: [
+      "Jag har identifierat 2 etiska modeller att använda (t.ex. pliktetik, konsekvensetik, sinnelagsetik)",
+      "Jag har minst 2 relevanta argument (rätt OCH/ELLER fel)",
+      "Minst 2 av argumenten förtydligas med 2 ex/förklaringar/konsekvenser vardera",
+      "Jag problematiserar — visar att en modell kan ge argument för BÅDA sidor"
+    ],
+    modelAnswer: `Ur ett pliktetiskt perspektiv gör man fel om man ljuger, även för att skydda en vän. Pliktetiken bygger på att regler och plikter gäller oavsett omständigheter. Att ljuga bryter mot sanningsplikten, en grundläggande moralisk regel. Om alla ljög när det passade dem, skulle förtroende och kommunikation i samhället bryta samman — vilket visar varför plikten att tala sanning är viktig.<br><br>
+    Ur ett konsekvensetiskt perspektiv kan det däremot vara rätt att ljuga om det leder till bättre konsekvenser totalt. Om lögnen skyddar vännen från en orättvis konsekvens, och ingen annan skadas, är den sammanlagda nyttan positiv. Men konsekvensetiken kan lika gärna leda till slutsatsen att man gör fel — om lögnen riskerar att avslöjas och förstöra relationen på lång sikt, eller skadar en tredje part, är konsekvenserna negativa.<br><br>
+    Det är just det som gör etiska frågor komplexa: konsekvensetiken ger inget enkelt svar, utan beror helt på vilka konsekvenser som faktiskt uppstår. Det visar att moraliska dilemman sällan har ett självklart svar.`
+  },
+  {
+    question: `Resonera om hur en <strong>tonårings identitet</strong> kan påverkas på olika sätt av att tillhöra <strong>islam</strong>. Använd <strong>flera perspektiv</strong> (t.ex. kön, ålder, bakgrund) och visa på <strong>både positiva och negativa</strong> effekter på identiteten.`,
+    checklist: [
+      "Jag resonerar om FLERA perspektiv (t.ex. kön, ålder, bakgrund)",
+      "Jag visar BÅDE positiva och negativa effekter",
+      "Jag förtydligar med konkreta exempel",
+      "Jag problematiserar — visar att religionens påverkan ser olika ut för olika individer"
+    ],
+    modelAnswer: `Islam kan påverka en tonårings identitet på flera sätt beroende på vem personen är och i vilken kontext de lever.<br><br>
+    En positiv effekt är känslan av gemenskap och tillhörighet. En muslimsk tonåring som deltar i fredagsbönen och firar Eid tillsammans med sin familj och sitt samfund kan känna en stark identitet kopplad till gemenskap — "jag vet vem jag är och var jag hör hemma." Det kan vara en trygg grund i en period av livet präglad av osäkerhet.<br><br>
+    Men påverkan kan se olika ut beroende på kön. För en muslimsk tjej i en icke-muslimsk klass kan det vara mer synligt att bära hijab — det skapar en tydlig religiös identitet utåt. Å ena sidan kan det stärka hennes känsla av stolthet och konsekvens. Å andra sidan kan det leda till känslan av att vara annorlunda eller att behöva försvara sin tro, vilket påverkar identiteten negativt.<br><br>
+    Religionstillhörigheten kan även skapa en inre spänning för tonåringar som växer upp i en sekulär miljö. Att navigera mellan familjens religiösa förväntningar och det liv man ser bland icke-religiösa kompisar formar identiteten aktivt — man tvingas bestämma sig för vem man är och vad man värdesätter.`
+  }
+];
+
+// ===== STATE =====
+let state = {
+  xp: 0,
+  streak: 0,
+  mod1Done: false,
+  mod2Score: 0,
+  mod2Total: quizData.length,
+  mod2Current: 0,
+  mod2Answered: [],
+  mod3Score: 0,
+  mod3Total: judgeData.length,
+  mod3Current: 0,
+  mod3Answered: [],
+  mod4Current: 0,
+  mod4Total: writeData.length,
+  mod4Answered: []
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('plugganp_state');
+    if (saved) state = Object.assign(state, JSON.parse(saved));
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem('plugganp_state', JSON.stringify(state)); } catch(e) {}
+}
+
+// ===== NAVIGATION =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome() {
+  updateHomeBadges();
+  showScreen('home');
+}
+function openModule(id) {
+  showScreen(id);
+  if (id === 'mod2') renderQuiz();
+  if (id === 'mod3') renderJudge();
+  if (id === 'mod4') renderWrite();
+}
+
+// ===== HOME BADGES =====
+function updateHomeBadges() {
+  document.getElementById('total-xp').textContent = state.xp;
+  document.getElementById('streak').textContent = state.streak;
+
+  const m1 = document.getElementById('m1-badge');
+  const m1bar = document.getElementById('m1-bar');
+  if (state.mod1Done) { m1.textContent = '✅'; m1bar.style.width = '100%'; }
+
+  const m2pct = Math.round((state.mod2Answered.length / state.mod2Total) * 100);
+  document.getElementById('m2-bar').style.width = m2pct + '%';
+  if (state.mod2Answered.length === state.mod2Total) document.getElementById('m2-badge').textContent = '✅';
+
+  const m3pct = Math.round((state.mod3Answered.length / state.mod3Total) * 100);
+  document.getElementById('m3-bar').style.width = m3pct + '%';
+  if (state.mod3Answered.length === state.mod3Total) document.getElementById('m3-badge').textContent = '✅';
+
+  const m4pct = Math.round((state.mod4Answered.length / state.mod4Total) * 100);
+  document.getElementById('m4-bar').style.width = m4pct + '%';
+  if (state.mod4Answered.length === state.mod4Total) document.getElementById('m4-badge').textContent = '✅';
+}
+
+// ===== MODULE 1 NAVIGATION =====
+let m1Current = 1;
+const m1Total = 5;
+function m1Next() {
+  if (m1Current < m1Total) {
+    document.getElementById('m1-s' + m1Current).classList.remove('active');
+    m1Current++;
+    document.getElementById('m1-s' + m1Current).classList.add('active');
+    document.getElementById('m1-progress').style.width = Math.round((m1Current / m1Total) * 100) + '%';
+  }
+}
+function m1Prev() {
+  if (m1Current > 1) {
+    document.getElementById('m1-s' + m1Current).classList.remove('active');
+    m1Current--;
+    document.getElementById('m1-s' + m1Current).classList.add('active');
+    document.getElementById('m1-progress').style.width = Math.round((m1Current / m1Total) * 100) + '%';
+  }
+}
+function completeModule(moduleId, prefix) {
+  if (prefix === 'm1') { state.mod1Done = true; state.xp += 50; state.streak++; }
+  saveState();
+  updateHomeBadges();
+  showCompletionToast(moduleId);
+}
+function showCompletionToast(moduleId) {
+  const names = { mod1: 'NP-koden', mod2: 'Avkoda frågan', mod3: 'Bedöm svaret', mod4: 'Skriv och jämför' };
+  alert('🎉 Bra jobbat! Du har klarat ' + (names[moduleId] || moduleId) + '!\n\n+50 XP tillagda!');
+  goHome();
+}
+
+// ===== MODULE 2: QUIZ =====
+function renderQuiz() {
+  const idx = state.mod2Current;
+  if (idx >= quizData.length) {
+    renderQuizDone();
+    return;
+  }
+  const q = quizData[idx];
+  const progress = Math.round((idx / quizData.length) * 100);
+  document.getElementById('m2-progress').style.width = progress + '%';
+  const alreadyAnswered = state.mod2Answered.includes(idx);
+
+  let html = `
+    <div class="slide-count">Fråga ${idx + 1} av ${quizData.length}</div>
+    <div class="quiz-question-card">
+      <div class="quiz-label">📋 Uppgiftsbeskrivning</div>
+      <p>${q.q}</p>
+    </div>
+    <div class="card">
+      <p style="font-weight:700;margin-bottom:14px">${q.question}</p>
+      <div class="options-list">`;
+
+  q.options.forEach((opt, i) => {
+    let cls = 'option-btn';
+    if (alreadyAnswered) {
+      cls += ' disabled';
+      if (i === q.correct) cls += ' correct';
+    }
+    html += `<button class="${cls}" onclick="answerQuiz(${idx}, ${i})">${opt}</button>`;
+  });
+
+  html += `</div>
+      <div class="feedback-box" id="quiz-feedback"></div>
+    </div>`;
+
+  if (alreadyAnswered) {
+    html += `<button class="btn btn-primary" onclick="nextQuiz()">Nästa fråga →</button>`;
+  }
+
+  document.getElementById('m2-content').innerHTML = html;
+
+  if (alreadyAnswered) {
+    const fb = document.getElementById('quiz-feedback');
+    fb.innerHTML = `<div class="feedback-title">✅ Du har svarat på den här frågan</div>${q.feedback}`;
+    fb.className = 'feedback-box correct show';
+  }
+}
+
+function answerQuiz(qIdx, chosen) {
+  if (state.mod2Answered.includes(qIdx)) return;
+  const q = quizData[qIdx];
+  const buttons = document.querySelectorAll('.option-btn');
+  const isCorrect = chosen === q.correct;
+  buttons.forEach((btn, i) => {
+    btn.classList.add('disabled');
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === chosen && !isCorrect) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('quiz-feedback');
+  if (isCorrect) {
+    fb.innerHTML = `<div class="feedback-title">✅ Rätt!</div>${q.feedback}`;
+    fb.className = 'feedback-box correct show';
+    state.xp += 10;
+  } else {
+    fb.innerHTML = `<div class="feedback-title">❌ Inte riktigt…</div>${q.feedback}`;
+    fb.className = 'feedback-box wrong show';
+  }
+  state.mod2Answered.push(qIdx);
+  saveState();
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn btn-primary';
+  nextBtn.style.marginTop = '12px';
+  nextBtn.textContent = qIdx < quizData.length - 1 ? 'Nästa fråga →' : 'Se resultat →';
+  nextBtn.onclick = nextQuiz;
+  document.getElementById('m2-content').appendChild(nextBtn);
+  document.getElementById('m2-progress').style.width = Math.round(((qIdx + 1) / quizData.length) * 100) + '%';
+}
+
+function nextQuiz() {
+  state.mod2Current = Math.min(state.mod2Current + 1, quizData.length);
+  saveState();
+  renderQuiz();
+}
+
+function renderQuizDone() {
+  const correct = state.mod2Answered.length;
+  document.getElementById('m2-progress').style.width = '100%';
+  const score = Math.round((correct / quizData.length) * 100);
+  let stars = score >= 85 ? '⭐⭐⭐' : score >= 60 ? '⭐⭐' : '⭐';
+  document.getElementById('m2-content').innerHTML = `
+    <div class="result-screen">
+      <div class="result-emoji">🎉</div>
+      <div class="result-title">Modul 2 klar!</div>
+      <div class="result-sub">Du avkodade alla ${quizData.length} frågor</div>
+      <div class="result-stars">${stars}</div>
+      <div class="xp-earned">+${state.xp} XP totalt</div>
+      <button class="btn btn-primary" onclick="state.mod2Current=0;state.mod2Answered=[];saveState();renderQuiz()">🔁 Gör om</button>
+      <button class="btn btn-outline btn-full" style="margin-top:10px" onclick="goHome()">🏠 Hem</button>
+    </div>`;
+  if (!state.mod2Done) { state.mod2Done = true; state.xp += 30; saveState(); }
+  updateHomeBadges();
+}
+
+// ===== MODULE 3: BEDÖM SVARET =====
+function renderJudge() {
+  const idx = state.mod3Current;
+  if (idx >= judgeData.length) {
+    renderJudgeDone();
+    return;
+  }
+  const ex = judgeData[idx];
+  const progress = Math.round((idx / judgeData.length) * 100);
+  document.getElementById('m3-progress').style.width = progress + '%';
+  const alreadyAnswered = state.mod3Answered.includes(idx);
+
+  let html = `
+    <div class="slide-count">Uppgift ${idx + 1} av ${judgeData.length}</div>
+    <div class="judge-question"><p>${ex.question}</p></div>
+    <div class="card">
+      <p style="font-weight:700;margin-bottom:4px">Vilket svar håller A-nivå?</p>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px">Läs alla tre svar noggrant. Välj det du tror är A-nivå.</p>
+      <div class="answer-cards">`;
+
+  ex.answers.forEach((ans, i) => {
+    let cls = 'answer-card';
+    if (alreadyAnswered) {
+      if (i === ex.correctIndex) cls += ' correct-answer';
+    }
+    html += `<div class="${cls}" id="ans-${i}" onclick="judgeAnswer(${idx}, ${i})">
+      <div class="answer-label">${ans.label}</div>
+      <div class="answer-text">${ans.text}</div>
+      <div class="grade-reveal" id="grade-reveal-${i}">
+        <span class="grade-tag ${ans.grade}">${ans.grade.toUpperCase()}-nivå</span>
+        <div class="grade-explain">${ans.explain}</div>
+      </div>
+    </div>`;
+  });
+
+  html += `</div>`;
+
+  if (alreadyAnswered) {
+    html += `<button class="btn btn-primary" onclick="nextJudge()">Nästa uppgift →</button>`;
+    html += `</div>`;
+    document.getElementById('m3-content').innerHTML = html;
+    ex.answers.forEach((ans, i) => {
+      document.getElementById('grade-reveal-' + i).classList.add('show');
+    });
+  } else {
+    html += `</div>`;
+    document.getElementById('m3-content').innerHTML = html;
+  }
+}
+
+function judgeAnswer(qIdx, chosen) {
+  if (state.mod3Answered.includes(qIdx)) return;
+  const ex = judgeData[qIdx];
+  const isCorrect = chosen === ex.correctIndex;
+
+  ex.answers.forEach((ans, i) => {
+    const card = document.getElementById('ans-' + i);
+    card.onclick = null;
+    card.style.cursor = 'default';
+    if (i === ex.correctIndex) card.classList.add('correct-answer');
+    else if (i === chosen && !isCorrect) card.classList.add('wrong-answer');
+    document.getElementById('grade-reveal-' + i).classList.add('show');
+  });
+
+  if (isCorrect) state.xp += 15;
+  state.mod3Answered.push(qIdx);
+  saveState();
+  document.getElementById('m3-progress').style.width = Math.round(((qIdx + 1) / judgeData.length) * 100) + '%';
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn btn-primary';
+  nextBtn.style.marginTop = '12px';
+  nextBtn.textContent = qIdx < judgeData.length - 1 ? 'Nästa uppgift →' : 'Se resultat →';
+  nextBtn.onclick = nextJudge;
+  document.getElementById('m3-content').appendChild(nextBtn);
+}
+
+function nextJudge() {
+  state.mod3Current = Math.min(state.mod3Current + 1, judgeData.length);
+  saveState();
+  renderJudge();
+}
+
+function renderJudgeDone() {
+  document.getElementById('m3-progress').style.width = '100%';
+  document.getElementById('m3-content').innerHTML = `
+    <div class="result-screen">
+      <div class="result-emoji">⚖️</div>
+      <div class="result-title">Modul 3 klar!</div>
+      <div class="result-sub">Du har bedömt alla ${judgeData.length} exempelsvar</div>
+      <div class="result-stars">⭐⭐⭐</div>
+      <div class="xp-earned">+${state.xp} XP totalt</div>
+      <button class="btn btn-primary" onclick="state.mod3Current=0;state.mod3Answered=[];saveState();renderJudge()">🔁 Gör om</button>
+      <button class="btn btn-outline btn-full" style="margin-top:10px" onclick="goHome()">🏠 Hem</button>
+    </div>`;
+  if (!state.mod3Done) { state.mod3Done = true; state.xp += 30; saveState(); }
+  updateHomeBadges();
+}
+
+// ===== MODULE 4: SKRIV OCH JÄMFÖR =====
+function renderWrite() {
+  const idx = state.mod4Current;
+  if (idx >= writeData.length) {
+    renderWriteDone();
+    return;
+  }
+  const ex = writeData[idx];
+  const progress = Math.round((idx / writeData.length) * 100);
+  document.getElementById('m4-progress').style.width = progress + '%';
+
+  let checklistHTML = ex.checklist.map((item, i) =>
+    `<div class="checklist-item"><input type="checkbox" id="m4cl${idx}_${i}"><label for="m4cl${idx}_${i}">${item}</label></div>`
+  ).join('');
+
+  document.getElementById('m4-content').innerHTML = `
+    <div class="slide-count">Uppgift ${idx + 1} av ${writeData.length}</div>
+    <div class="write-question"><p>${ex.question}</p></div>
+    <div class="card">
+      <h3>📋 Checklista innan du skriver</h3>
+      <div class="checklist-items">${checklistHTML}</div>
+    </div>
+    <div class="card">
+      <h3>✍️ Ditt svar</h3>
+      <textarea class="answer-input" id="m4-textarea" placeholder="Skriv ditt svar här..."></textarea>
+      <button class="btn btn-primary" onclick="showModelAnswer(${idx})">Visa modellsvar på A-nivå →</button>
+    </div>
+    <div class="model-answer" id="model-answer-box">
+      <div class="model-answer-box">
+        <h4>📗 Modellsvar — A-nivå</h4>
+        <p>${ex.modelAnswer}</p>
+      </div>
+      <div style="margin-top:12px">
+        <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:8px">Jämför ditt svar med modellsvaret. Bocka av checklistan ovan.</p>
+        <button class="btn btn-success btn-full" onclick="nextWrite()">✅ Nästa uppgift →</button>
+      </div>
+    </div>`;
+}
+
+function showModelAnswer(idx) {
+  const box = document.getElementById('model-answer-box');
+  box.classList.add('show');
+  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!state.mod4Answered.includes(idx)) {
+    state.mod4Answered.push(idx);
+    state.xp += 20;
+    saveState();
+  }
+  document.getElementById('m4-progress').style.width = Math.round(((idx + 1) / writeData.length) * 100) + '%';
+}
+
+function nextWrite() {
+  state.mod4Current = Math.min(state.mod4Current + 1, writeData.length);
+  saveState();
+  renderWrite();
+}
+
+function renderWriteDone() {
+  document.getElementById('m4-progress').style.width = '100%';
+  document.getElementById('m4-content').innerHTML = `
+    <div class="result-screen">
+      <div class="result-emoji">✍️</div>
+      <div class="result-title">Modul 4 klar!</div>
+      <div class="result-sub">Du har tränat på alla ${writeData.length} långsvarsfrågor</div>
+      <div class="result-stars">⭐⭐⭐</div>
+      <div class="xp-earned">+${state.xp} XP totalt</div>
+      <button class="btn btn-primary" onclick="state.mod4Current=0;state.mod4Answered=[];saveState();renderWrite()">🔁 Gör om</button>
+      <button class="btn btn-outline btn-full" style="margin-top:10px" onclick="goHome()">🏠 Hem</button>
+    </div>`;
+  if (!state.mod4Done) { state.mod4Done = true; state.xp += 30; saveState(); }
+  updateHomeBadges();
+}
+
+// ===== INIT =====
+loadState();
+updateHomeBadges();
+</script>
+</body>
+</html>
