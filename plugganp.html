@@ -327,8 +327,10 @@
       <span class="xp-badge">🔥 Streak: <span id="streak">0</span></span>
     </div>
   </div>
-  <div class="home-intro-card" style="background:linear-gradient(135deg,#ede9fe,#fce7f3);border-radius:16px;padding:16px 20px;margin:0 0 16px;font-size:0.9rem;color:#3b0764;line-height:1.55;">
-    <strong>📌 Så här funkar det:</strong> När du har bra koll på all fakta är du redo för NP-koden. Gå igenom modulerna i ordning — de tränar dig steg för steg att skriva på A-nivå.
+  <div style="max-width:600px;margin:0 auto;padding:0 20px;">
+    <div class="home-intro-card" style="background:#fff0f0;border-left:4px solid #dc2626;border-radius:10px;padding:14px 18px;font-size:0.9rem;color:#1a1a1a;line-height:1.6;">
+      <strong style="color:#dc2626;">✏ Så här funkar det:</strong> När du har bra koll på all fakta är du redo för NP-koden. Gå igenom modulerna i ordning — de tränar dig steg för steg att skriva på A-nivå.
+    </div>
   </div>
   <div class="modules-list">
     <div class="module-card mod1" onclick="openModule('mod1')">
@@ -403,8 +405,8 @@
   <div class="progress-bar-wrap"><div class="progress-bar-fill" id="m1-progress" style="width:0%"></div></div>
   <div class="content">
 
-    <!-- SLIDE 1: NP-frågan -->
-    <div class="slide active" id="m1-s1">
+    <!-- SEKTION 1: NP-frågan (alltid synlig) -->
+    <div id="m1-sec1">
       <div class="slide-count">Del 1 av 3</div>
       <div class="card" style="border-left:4px solid var(--primary)">
         <div style="font-size:0.78rem;font-weight:700;color:var(--primary);letter-spacing:0.05em;margin-bottom:8px">📋 NATIONELLT PROV — FRÅGA 7</div>
@@ -419,13 +421,13 @@
           <li><strong>Valfri religion</strong> — välj en du kan bra</li>
         </ul>
       </div>
-      <div class="nav-arrows">
-        <button class="btn btn-primary" onclick="m1Next()" style="margin:0;flex:1">Nästa: Betygskraven →</button>
+      <div class="nav-arrows" id="m1-sec1-nav">
+        <button class="btn btn-primary" onclick="m1Reveal(2)" style="margin:0;flex:1">Nästa: Betygskraven →</button>
       </div>
     </div>
 
-    <!-- SLIDE 2: Betygskraven -->
-    <div class="slide" id="m1-s2">
+    <!-- SEKTION 2: Betygskraven (dold initialt) -->
+    <div id="m1-sec2" style="display:none;margin-top:8px">
       <div class="slide-count">Del 2 av 3</div>
       <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:16px">Vad krävs för E, C och A?</h2>
       <div class="card" style="border-left:4px solid #ef4444;padding:14px 16px;margin-bottom:10px">
@@ -440,14 +442,13 @@
         <div style="font-size:0.75rem;font-weight:800;color:#16a34a;letter-spacing:0.06em;margin-bottom:6px">A-NIVÅ</div>
         <p style="font-size:0.9rem;margin:0;line-height:1.5">Samtliga <strong>fyra</strong> punkter (2 likheter + 2 skillnader) förtydligas med ett konkret exempel eller förklaring <em>vardera</em>.</p>
       </div>
-      <div class="nav-arrows">
-        <button class="btn btn-outline" onclick="m1Prev()">← Tillbaka</button>
-        <button class="btn btn-primary" onclick="m1Next()" style="margin:0">Nästa →</button>
+      <div class="nav-arrows" id="m1-sec2-nav">
+        <button class="btn btn-primary" onclick="m1Reveal(3)" style="margin:0;flex:1">Nästa →</button>
       </div>
     </div>
 
-    <!-- SLIDE 3: Sammanfattning -->
-    <div class="slide" id="m1-s3">
+    <!-- SEKTION 3: Sammanfattning (dold initialt) -->
+    <div id="m1-sec3" style="display:none;margin-top:8px">
       <div class="slide-count">Del 3 av 3</div>
       <h2 style="font-size:1.15rem;font-weight:800;margin-bottom:14px">🔑 NP-koden — sammanfattning</h2>
       <div class="card" style="background:linear-gradient(135deg,#ede9fe,#fce7f3);border:none">
@@ -458,9 +459,8 @@
           I Modul 2 tränar du på att identifiera uppdragsorden — orden som talar om exakt <em>vad du ska göra</em>.
         </p>
       </div>
-      <div class="nav-arrows" style="flex-direction:column;gap:10px">
-        <button class="btn btn-outline" onclick="m1Prev()" style="margin:0">← Tillbaka</button>
-        <button class="btn btn-success" onclick="completeModule('mod1', 'm1')" style="margin:0;flex:1">🎉 Klar med NP-koden!</button>
+      <div class="nav-arrows">
+        <button class="btn btn-success" onclick="completeModule('mod1', 'm1')" style="margin:0;flex:1">➡️ Fortsätt med NP-koden</button>
       </div>
     </div>
 
@@ -910,6 +910,7 @@ function goHome() {
 }
 function openModule(id) {
   showScreen(id);
+  if (id === 'mod1') m1Reset();
   if (id === 'mod3') renderJudge();
   if (id === 'mod4') renderWrite();
   if (id === 'mod5') initFlashcards();
@@ -939,23 +940,27 @@ function updateHomeBadges() {
 }
 
 // ===== MODULE 1 NAVIGATION =====
-let m1Current = 1;
-const m1Total = 3;
-function m1Next() {
-  if (m1Current < m1Total) {
-    document.getElementById('m1-s' + m1Current).classList.remove('active');
-    m1Current++;
-    document.getElementById('m1-s' + m1Current).classList.add('active');
-    document.getElementById('m1-progress').style.width = Math.round((m1Current / m1Total) * 100) + '%';
-  }
+function m1Reveal(section) {
+  const sec = document.getElementById('m1-sec' + section);
+  sec.style.display = 'block';
+  sec.style.opacity = '0';
+  sec.style.transition = 'opacity 0.3s ease';
+  setTimeout(() => { sec.style.opacity = '1'; }, 10);
+  const prevNav = document.getElementById('m1-sec' + (section - 1) + '-nav');
+  if (prevNav) prevNav.style.display = 'none';
+  setTimeout(() => { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+  document.getElementById('m1-progress').style.width = Math.round((section / 3) * 100) + '%';
 }
-function m1Prev() {
-  if (m1Current > 1) {
-    document.getElementById('m1-s' + m1Current).classList.remove('active');
-    m1Current--;
-    document.getElementById('m1-s' + m1Current).classList.add('active');
-    document.getElementById('m1-progress').style.width = Math.round((m1Current / m1Total) * 100) + '%';
-  }
+function m1Reset() {
+  ['m1-sec2', 'm1-sec3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.style.opacity = ''; }
+  });
+  ['m1-sec1-nav', 'm1-sec2-nav'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+  document.getElementById('m1-progress').style.width = '0%';
 }
 
 // ===== MODULE 2 NAVIGATION =====
